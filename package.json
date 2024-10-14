@@ -1,5 +1,5 @@
 {
-  "name": "typescript-rest",
+  "name": "@nmshd/typescript-rest",
   "version": "3.0.5",
   "description": "A Library to create RESTFul APIs with Typescript",
   "keywords": [
@@ -103,5 +103,8 @@
   "authors": [
     "Thiago da Rosa de Bustamante <thiago@cruxframework.org>",
     "js-soft GmbH"
-  ]
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
 }
