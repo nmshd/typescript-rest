@@ -76,7 +76,10 @@ export abstract class ReferencedResource<T> {
      * @param location To be added to the Location header on response
      * @param statusCode the response status code to be sent
      */
-    constructor(public location: string, public statusCode: number) { }
+    constructor(
+        public location: string,
+        public statusCode: number
+    ) {}
 }
 
 /**
@@ -114,7 +117,7 @@ export interface ServiceAuthenticator {
     getMiddleware(): express.RequestHandler;
 }
 
-export type ServiceProcessor = (req: express.Request, res?: express.Response) => void;
+export type ServiceProcessor = (req: express.Request, res?: express.Response) => void | Promise<void>;
 export type ParameterConverter = (paramValue: any) => any;
 
 /**

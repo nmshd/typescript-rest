@@ -1,3 +1,4 @@
+/* eslint-disable prefer-spread */
 'use strict';
 
 import * as bodyParser from 'body-parser';
@@ -10,8 +11,13 @@ import * as multer from 'multer';
 import * as Errors from './model/errors';
 import { ServiceClass, ServiceMethod } from './model/metadata';
 import {
-    FileLimits, HttpMethod, ParameterConverter,
-    ParserType, ServiceAuthenticator, ServiceContext, ServiceFactory
+    FileLimits,
+    HttpMethod,
+    ParameterConverter,
+    ParserType,
+    ServiceAuthenticator,
+    ServiceContext,
+    ServiceFactory
 } from './model/server-types';
 import { ServiceInvoker } from './service-invoker';
 
@@ -34,7 +40,11 @@ export class ServerContainer {
     public cookiesSecret: string;
     public cookiesDecoder: (val: string) => string;
     public fileDest: string;
-    public fileFilter: (req: Express.Request, file: Express.Multer.File, callback: (error: Error, acceptFile: boolean) => void) => void;
+    public fileFilter: (
+        req: Express.Request,
+        file: Express.Multer.File,
+        callback: (error: Error, acceptFile: boolean) => void
+    ) => void;
     public fileLimits: FileLimits;
     public ignoreNextMiddlewares: boolean = false;
     public authenticator: Map<string, ServiceAuthenticator> = new Map<string, ServiceAuthenticator>();
@@ -51,7 +61,9 @@ export class ServerContainer {
     private paths: Map<string, Set<HttpMethod>> = new Map<string, Set<HttpMethod>>();
     private pathsResolved: boolean = false;
 
-    private constructor() { }
+    private constructor() {
+        // noop, make the constructor private
+    }
 
     public registerServiceClass(target: Function): ServiceClass {
         this.pathsResolved = false;
@@ -96,7 +108,7 @@ export class ServerContainer {
 
     public buildServices(types?: Array<Function>) {
         if (types) {
-            types = types.map(type => this.serviceFactory.getTargetClass(type));
+            types = types.map((type) => this.serviceFactory.getTargetClass(type));
         }
         this.debugger.build('Creating service endpoints for types: %o', types);
         if (this.authenticator) {
@@ -105,9 +117,9 @@ export class ServerContainer {
                 auth.initialize(this.router);
             });
         }
-        this.serverClasses.forEach(classData => {
+        this.serverClasses.forEach((classData) => {
             if (!classData.isAbstract) {
-                classData.methods.forEach(method => {
+                classData.methods.forEach((method) => {
                     if (this.validateTargetType(classData.targetClass, types)) {
                         this.buildService(classData, method);
                     }
@@ -188,8 +200,8 @@ export class ServerContainer {
         if (!this.pathsResolved) {
             this.debugger.build('Building the server list of paths');
             this.paths.clear();
-            this.serverClasses.forEach(classData => {
-                classData.methods.forEach(method => {
+            this.serverClasses.forEach((classData) => {
+                classData.methods.forEach((method) => {
                     if (!method.resolvedPath) {
                         this.resolveProperties(classData, method);
                     }
@@ -204,15 +216,13 @@ export class ServerContainer {
         return this.serverClasses.get(target) || null;
     }
 
-    private resolveProperties(serviceClass: ServiceClass,
-        serviceMethod: ServiceMethod): void {
+    private resolveProperties(serviceClass: ServiceClass, serviceMethod: ServiceMethod): void {
         this.resolveLanguages(serviceClass, serviceMethod);
         this.resolveAccepts(serviceClass, serviceMethod);
         this.resolvePath(serviceClass, serviceMethod);
     }
 
-    private resolveLanguages(serviceClass: ServiceClass,
-        serviceMethod: ServiceMethod): void {
+    private resolveLanguages(serviceClass: ServiceClass, serviceMethod: ServiceMethod): void {
         this.debugger.build('Resolving the list of acceptable languages for method %s', serviceMethod.name);
 
         const resolvedLanguages = _.union(serviceClass.languages, serviceMethod.languages);
@@ -221,9 +231,7 @@ export class ServerContainer {
         }
     }
 
-    private resolveAccepts(serviceClass: ServiceClass,
-        serviceMethod: ServiceMethod): void {
-
+    private resolveAccepts(serviceClass: ServiceClass, serviceMethod: ServiceMethod): void {
         this.debugger.build('Resolving the list of acceptable types for method %s', serviceMethod.name);
         const resolvedAccepts = _.union(serviceClass.accepts, serviceMethod.accepts);
         if (resolvedAccepts.length > 0) {
@@ -231,9 +239,7 @@ export class ServerContainer {
         }
     }
 
-    private resolvePath(serviceClass: ServiceClass,
-        serviceMethod: ServiceMethod): void {
-
+    private resolvePath(serviceClass: ServiceClass, serviceMethod: ServiceMethod): void {
         this.debugger.build('Resolving the path for method %s', serviceMethod.name);
 
         const classPath: string = serviceClass.path ? serviceClass.path.trim() : '';
@@ -261,7 +267,7 @@ export class ServerContainer {
 
     private validateTargetType(targetClass: Function, types: Array<Function>): boolean {
         if (types && types.length > 0) {
-            return (types.indexOf(targetClass) > -1);
+            return types.indexOf(targetClass) > -1;
         }
         return true;
     }
@@ -326,17 +332,26 @@ export class ServerContainer {
 
     private buildSecurityMiddlewares(serviceClass: ServiceClass, serviceMethod: ServiceMethod) {
         const result: Array<express.RequestHandler> = new Array<express.RequestHandler>();
-        const authenticatorMap: Record<string, Array<string>> | undefined = serviceMethod.authenticator || serviceClass.authenticator;
+        const authenticatorMap: Record<string, Array<string>> | undefined =
+            serviceMethod.authenticator || serviceClass.authenticator;
         if (this.authenticator && authenticatorMap) {
             const authenticatorNames: Array<string> = Object.keys(authenticatorMap);
             for (const authenticatorName of authenticatorNames) {
                 let roles: Array<string> = authenticatorMap[authenticatorName];
-                this.debugger.build('Registering an authenticator middleware <%s> for method <%s>.', authenticatorName, serviceMethod.name);
+                this.debugger.build(
+                    'Registering an authenticator middleware <%s> for method <%s>.',
+                    authenticatorName,
+                    serviceMethod.name
+                );
                 const authenticator = this.getAuthenticator(authenticatorName);
                 result.push(authenticator.getMiddleware());
                 roles = roles.filter((role) => role !== '*');
                 if (roles.length) {
-                    this.debugger.build('Registering a role validator middleware <%s> for method <%s>.', authenticatorName, serviceMethod.name);
+                    this.debugger.build(
+                        'Registering a role validator middleware <%s> for method <%s>.',
+                        authenticatorName,
+                        serviceMethod.name
+                    );
                     this.debugger.build('Roles: <%j>.', roles);
                     result.push(this.buildAuthMiddleware(authenticator, roles));
                 }
@@ -361,14 +376,16 @@ export class ServerContainer {
             }
             if (requestRoles.some((role: string) => roles.indexOf(role) >= 0)) {
                 next();
-            }
-            else {
+            } else {
                 throw new Errors.ForbiddenError();
             }
         };
     }
 
-    private buildParserMiddlewares(serviceClass: ServiceClass, serviceMethod: ServiceMethod): Array<express.RequestHandler> {
+    private buildParserMiddlewares(
+        serviceClass: ServiceClass,
+        serviceMethod: ServiceMethod
+    ): Array<express.RequestHandler> {
         const result: Array<express.RequestHandler> = new Array<express.RequestHandler>();
         const bodyParserOptions = serviceMethod.bodyParserOptions || serviceClass.bodyParserOptions;
 
@@ -378,13 +395,20 @@ export class ServerContainer {
         }
         if (serviceMethod.mustParseBody) {
             const bodyParserType = serviceMethod.bodyParserType || serviceClass.bodyParserType || ParserType.json;
-            this.debugger.build('Registering body %s parser middleware for method <%s>' +
-                ' with options: %j.', ParserType[bodyParserType], serviceMethod.name, bodyParserOptions);
+            this.debugger.build(
+                'Registering body %s parser middleware for method <%s>' + ' with options: %j.',
+                ParserType[bodyParserType],
+                serviceMethod.name,
+                bodyParserOptions
+            );
             result.push(this.buildBodyParserMiddleware(serviceMethod, bodyParserOptions, bodyParserType));
         }
         if (serviceMethod.mustParseForms || serviceMethod.acceptMultiTypedParam) {
-            this.debugger.build('Registering body form parser middleware for method <%s>' +
-                ' with options: %j.', serviceMethod.name, bodyParserOptions);
+            this.debugger.build(
+                'Registering body form parser middleware for method <%s>' + ' with options: %j.',
+                serviceMethod.name,
+                bodyParserOptions
+            );
             result.push(this.buildFormParserMiddleware(bodyParserOptions));
         }
         if (serviceMethod.files.length > 0) {
@@ -395,7 +419,11 @@ export class ServerContainer {
         return result;
     }
 
-    private buildBodyParserMiddleware(serviceMethod: ServiceMethod, bodyParserOptions: any, bodyParserType: ParserType) {
+    private buildBodyParserMiddleware(
+        serviceMethod: ServiceMethod,
+        bodyParserOptions: any,
+        bodyParserType: ParserType
+    ) {
         switch (bodyParserType) {
             case ParserType.text:
                 return this.buildTextBodyParserMiddleware(bodyParserOptions);
@@ -408,12 +436,11 @@ export class ServerContainer {
 
     private buildFilesParserMiddleware(serviceMethod: ServiceMethod) {
         const options: Array<multer.Field> = new Array<multer.Field>();
-        serviceMethod.files.forEach(fileData => {
+        serviceMethod.files.forEach((fileData) => {
             if (fileData.singleFile) {
-                options.push({ 'name': fileData.name, 'maxCount': 1 });
-            }
-            else {
-                options.push({ 'name': fileData.name });
+                options.push({ name: fileData.name, maxCount: 1 });
+            } else {
+                options.push({ name: fileData.name });
             }
         });
         this.debugger.build('Creating file parser with options %j.', options);
@@ -421,12 +448,11 @@ export class ServerContainer {
     }
 
     private buildFormParserMiddleware(bodyParserOptions: any) {
-        let middleware: express.RequestHandler;
         if (!bodyParserOptions) {
             bodyParserOptions = { extended: true };
         }
         this.debugger.build('Creating form body parser with options %j.', bodyParserOptions);
-        middleware = bodyParser.urlencoded(bodyParserOptions);
+        const middleware = bodyParser.urlencoded(bodyParserOptions);
         return middleware;
     }
 
@@ -435,8 +461,7 @@ export class ServerContainer {
         this.debugger.build('Creating json body parser with options %j.', bodyParserOptions || {});
         if (bodyParserOptions) {
             middleware = bodyParser.json(bodyParserOptions);
-        }
-        else {
+        } else {
             middleware = bodyParser.json();
         }
         return middleware;
@@ -447,8 +472,7 @@ export class ServerContainer {
         this.debugger.build('Creating text body parser with options %j.', bodyParserOptions || {});
         if (bodyParserOptions) {
             middleware = bodyParser.text(bodyParserOptions);
-        }
-        else {
+        } else {
             middleware = bodyParser.text();
         }
         return middleware;
@@ -459,8 +483,7 @@ export class ServerContainer {
         this.debugger.build('Creating raw body parser with options %j.', bodyParserOptions || {});
         if (bodyParserOptions) {
             middleware = bodyParser.raw(bodyParserOptions);
-        }
-        else {
+        } else {
             middleware = bodyParser.raw();
         }
         return middleware;

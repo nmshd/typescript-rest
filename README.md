@@ -5,19 +5,20 @@
 [![BCH compliance](https://bettercodehub.com/edge/badge/thiagobustamante/typescript-rest?branch=master)](https://bettercodehub.com/)
 
 # REST Services for Typescript
+
 This is a lightweight annotation-based [expressjs](http://expressjs.com/) extension for typescript.
 
 It can be used to define your APIs using decorators.
 
-**Table of Contents** 
+**Table of Contents**
 
-- [REST Services for Typescript](#)
-  - [Installation](#installation)
-  - [Configuration](#configuration)
-  - [Basic Usage](#basic-usage)
-  - [Using with an IoC Container](#using-with-an-ioc-container)
-  - [Documentation](https://github.com/thiagobustamante/typescript-rest/wiki)
-  - [Boilerplate Project](#boilerplate-project)  
+-   [REST Services for Typescript](#rest-services-for-typescript)
+    -   [Installation](#installation)
+    -   [Configuration](#configuration)
+    -   [Basic Usage](#basic-usage)
+    -   [Using with an IoC Container](#using-with-an-ioc-container)
+    -   [Complete Guide](#complete-guide)
+    -   [Boilerplate Project](#boilerplate-project)
 
 ## Installation
 
@@ -50,25 +51,24 @@ Typescript-rest requires the following TypeScript compilation options in your ts
 ## Basic Usage
 
 ```typescript
-import * as express from "express";
-import {Server, Path, GET, PathParam} from "typescript-rest";
+import * as express from 'express';
+import { Server, Path, GET, PathParam } from 'typescript-rest';
 
-@Path("/hello")
+@Path('/hello')
 class HelloService {
-  @Path(":name")
-  @GET
-  sayHello( @PathParam('name') name: string ): string {
-    return "Hello " + name;
-  }
+    @Path(':name')
+    @GET
+    sayHello(@PathParam('name') name: string): string {
+        return 'Hello ' + name;
+    }
 }
 
 let app: express.Application = express();
 Server.buildServices(app);
 
-app.listen(3000, function() {
-  console.log('Rest Server listening on port 3000!');
+app.listen(3000, function () {
+    console.log('Rest Server listening on port 3000!');
 });
-
 ```
 
 That's it. You can just call now:
@@ -82,16 +82,16 @@ GET http://localhost:3000/hello/joe
 Install the IoC container and the serviceFactory for the IoC Container
 
 ```bash
-npm install typescript-rest --save
-npm install typescript-ioc --save
-npm install typescript-rest-ioc --save
+npm install @nmshd/typescript-rest --save
+npm install @nmshd/typescript-ioc --save
+npm install @nmshd/typescript-rest-ioc --save
 ```
 
 Then add a rest.config file in the root of your project:
 
 ```json
 {
-  "serviceFactory": "typescript-rest-ioc"
+    "serviceFactory": "@nmshd/typescript-rest-ioc"
 }
 ```
 
@@ -101,21 +101,21 @@ Example:
 
 ```typescript
 class HelloService {
-  sayHello(name: string) {
-    return "Hello " + name;
-  }
+    sayHello(name: string) {
+        return 'Hello ' + name;
+    }
 }
 
-@Path("/hello")
+@Path('/hello')
 class HelloRestService {
-  @Inject
-  private helloService: HelloService;
+    @Inject
+    private helloService: HelloService;
 
-  @Path(":name")
-  @GET
-  sayHello( @PathParam('name') name: string): string {
-    return this.sayHello(name);
-  }
+    @Path(':name')
+    @GET
+    sayHello(@PathParam('name') name: string): string {
+        return this.sayHello(name);
+    }
 }
 ```
 

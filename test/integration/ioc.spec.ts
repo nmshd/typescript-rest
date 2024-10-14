@@ -1,13 +1,41 @@
+import { Container, Inject, OnlyInstantiableByContainer } from '@nmshd/typescript-ioc';
+import * as debug from 'debug';
 import * as express from 'express';
 import * as _ from 'lodash';
 import * as request from 'request';
-import { Inject, OnlyInstantiableByContainer } from 'typescript-ioc';
 import { DefaultServiceFactory, GET, Path, Server } from '../../src/typescript-rest';
 
-Server.registerServiceFactory('typescript-rest-ioc');
+const serverDebugger = debug('typescript-rest-ioc');
+
+const factory = {
+    create: (serviceClass: any) => {
+        return Container.get(serviceClass);
+    },
+
+    getTargetClass: (serviceClass: Function) => {
+        if (_.isArray(serviceClass)) return null;
+
+        let typeConstructor: any = serviceClass;
+        if (typeConstructor['name'] && typeConstructor['name'] !== 'ioc_wrapper') {
+            return typeConstructor as FunctionConstructor;
+        }
+        typeConstructor = typeConstructor['__parent'];
+        while (typeConstructor) {
+            if (typeConstructor['name'] && typeConstructor['name'] !== 'ioc_wrapper') {
+                return typeConstructor as FunctionConstructor;
+            }
+            typeConstructor = typeConstructor['__parent'];
+        }
+
+        serverDebugger('Can not identify the base Type for requested target: %o', serviceClass);
+        throw new TypeError('Can not identify the base Type for requested target');
+    }
+};
+
+Server.registerServiceFactory(factory);
 
 @OnlyInstantiableByContainer
-export class InjectableObject { }
+export class InjectableObject {}
 
 @OnlyInstantiableByContainer
 @Path('ioctest')
@@ -17,7 +45,7 @@ export class IoCService {
 
     @GET
     public test(): string {
-        return (this.injectedObject) ? 'OK' : 'NOT OK';
+        return this.injectedObject ? 'OK' : 'NOT OK';
     }
 }
 
@@ -29,7 +57,7 @@ export class IoCService2 {
 
     @GET
     public test(): string {
-        return (this.injectedObject) ? 'OK' : 'NOT OK';
+        return this.injectedObject ? 'OK' : 'NOT OK';
     }
 }
 
@@ -44,17 +72,15 @@ export class IoCService3 {
 
     @GET
     public test(): string {
-        return (this.injectedObject) ? 'OK' : 'NOT OK';
+        return this.injectedObject ? 'OK' : 'NOT OK';
     }
 }
 
 @Path('ioctest4')
 @OnlyInstantiableByContainer
-export class IoCService4 extends IoCService2 {
-}
+export class IoCService4 extends IoCService2 {}
 
 describe('IoC Tests', () => {
-
     beforeAll(() => {
         return startApi();
     });

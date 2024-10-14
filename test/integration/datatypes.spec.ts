@@ -1,14 +1,32 @@
 'use strict';
 
+import { Container } from '@nmshd/typescript-ioc';
 import * as express from 'express';
 import * as fs from 'fs';
 import * as _ from 'lodash';
 import * as request from 'request';
-import { Container } from 'typescript-ioc';
 import {
-    BodyOptions, BodyType, Context, ContextNext,
-    ContextRequest, ContextResponse, CookieParam, FileParam, FormParam,
-    GET, HeaderParam, Param, ParserType, Path, PathParam, POST, PUT, QueryParam, Return, Server, ServiceContext
+    BodyOptions,
+    BodyType,
+    Context,
+    ContextNext,
+    ContextRequest,
+    ContextResponse,
+    CookieParam,
+    FileParam,
+    FormParam,
+    GET,
+    HeaderParam,
+    Param,
+    ParserType,
+    Path,
+    PathParam,
+    POST,
+    PUT,
+    QueryParam,
+    Return,
+    Server,
+    ServiceContext
 } from '../../src/typescript-rest';
 
 export class Person {
@@ -28,7 +46,7 @@ export interface DataParam {
     param2: Date;
 }
 
-@Path("testparams")
+@Path('testparams')
 export class TestParamsService {
     @Context
     public context: ServiceContext;
@@ -39,9 +57,7 @@ export class TestParamsService {
     @Path('people/:id')
     @GET
     public getPerson(@PathParam('id') id: number): Promise<Person> {
-        return new Promise<Person>(function (resolve, reject) {
-            resolve(new Person(id, `This is the person with ID = ${id}`, 35));
-        });
+        return new Promise<Person>((resolve) => resolve(new Person(id, `This is the person with ID = ${id}`, 35)));
     }
 
     @PUT
@@ -68,20 +84,18 @@ export class TestParamsService {
         }
     })
     public testData(param: DataParam) {
-        if ((param.param2 instanceof Date) && (param.param2.toString() === param.param1)) {
+        if (param.param2 instanceof Date && param.param2.toString() === param.param1) {
             return 'OK';
         }
         return 'NOT OK';
     }
 
-
     @GET
     @Path('/people')
-    public getAll(@QueryParam('start') start: number,
-        @QueryParam('size') size: number): Array<Person> {
+    public getAll(@QueryParam('start') start: number, @QueryParam('size') size: number): Array<Person> {
         const result: Array<Person> = new Array<Person>();
 
-        for (let i: number = start; i < (start + size); i++) {
+        for (let i: number = start; i < start + size; i++) {
             result.push(new Person(i, `This is the person with ID = ${i}`, 35));
         }
         return result;
@@ -90,13 +104,13 @@ export class TestParamsService {
     @GET
     @Path('myheader')
     public testMyHeader(): string {
+        // eslint-disable-next-line @typescript-eslint/restrict-plus-operands, @typescript-eslint/no-base-to-string
         return 'header: ' + this.myHeader;
     }
 
     @GET
     @Path('headers')
-    public testHeaders(@HeaderParam('my-header') header: string,
-        @CookieParam('my-cookie') cookie: string): string {
+    public testHeaders(@HeaderParam('my-header') header: string, @CookieParam('my-cookie') cookie: string): string {
         return 'cookie: ' + cookie + '|header: ' + header;
     }
 
@@ -108,17 +122,17 @@ export class TestParamsService {
 
     @GET
     @Path('context')
-    public testContext(@QueryParam('q') q: string,
+    public testContext(
+        @QueryParam('q') q: string,
         @ContextRequest req: express.Request,
         @ContextResponse response: express.Response,
-        @ContextNext next: express.NextFunction): void {
-
+        @ContextNext next: express.NextFunction
+    ): void {
         if (req && response && next) {
             response.status(201);
             if (q === '123') {
                 response.send(true);
-            }
-            else {
+            } else {
                 response.send(false);
             }
         }
@@ -126,27 +140,31 @@ export class TestParamsService {
 
     @GET
     @Path('default-query')
-    public testDefaultQuery(@QueryParam('limit') limit: number = 20,
+    public testDefaultQuery(
+        @QueryParam('limit') limit: number = 20,
         @QueryParam('prefix') prefix: string = 'default',
-        @QueryParam('expand') expand: boolean = true): string {
+        @QueryParam('expand') expand: boolean = true
+    ): string {
         return `limit:${limit}|prefix:${prefix}|expand:${expand}`;
     }
 
     @GET
     @Path('optional-query')
-    public testOptionalQuery(@QueryParam('limit') limit?: number,
+    public testOptionalQuery(
+        @QueryParam('limit') limit?: number,
         @QueryParam('prefix') prefix?: string,
-        @QueryParam('expand') expand?: boolean): string {
+        @QueryParam('expand') expand?: boolean
+    ): string {
         return `limit:${limit}|prefix:${prefix}|expand:${expand}`;
     }
 
     @POST
     @Path('upload')
-    public testUploadFile(@FileParam('myFile') file: Express.Multer.File,
-        @FormParam('myField') myField: string): boolean {
-        return (file
-            && (_.startsWith(file.buffer.toString(), '\'use strict\';'))
-            && (myField === 'my_value'));
+    public testUploadFile(
+        @FileParam('myFile') file: Express.Multer.File,
+        @FormParam('myField') myField: string
+    ): boolean {
+        return file && _.startsWith(file.buffer.toString(), "'use strict';") && myField === 'my_value';
     }
 
     @GET
@@ -165,7 +183,7 @@ export class TestParamsService {
     @Path('download/ref')
     @GET
     public testDownloadFile2(): Promise<Return.DownloadResource> {
-        return new Promise<Return.DownloadResource>((resolve, reject) => {
+        return new Promise<Return.DownloadResource>((resolve) => {
             resolve(new Return.DownloadResource(__dirname + '/datatypes.spec.ts', 'test-rest.spec.js'));
         });
     }
@@ -173,7 +191,7 @@ export class TestParamsService {
     @Path('stringbody')
     @POST
     @BodyType(ParserType.text)
-    public async testStringBody(data: string) {
+    public testStringBody(data: string) {
         return data;
     }
 
@@ -181,7 +199,7 @@ export class TestParamsService {
     @POST
     @BodyType(ParserType.text)
     @BodyOptions({ type: 'text/myformat' })
-    public async testStringWithTypeBody(data: string) {
+    public testStringWithTypeBody(data: string) {
         return data;
     }
 
@@ -189,14 +207,13 @@ export class TestParamsService {
     @POST
     @BodyType(ParserType.raw)
     @BodyOptions({ type: 'text/plain' })
-    public async testRawBody(data: Buffer) {
+    public testRawBody(data: Buffer) {
         return Buffer.isBuffer(data);
     }
 }
 
-@Path("testreturn")
+@Path('testreturn')
 export class TestReturnService {
-
     @GET
     @Path('noresponse')
     public testNoResponse() {
@@ -219,7 +236,6 @@ export class TestReturnService {
 }
 
 describe('Data Types Tests', () => {
-
     beforeAll(() => {
         return startApi();
     });
@@ -239,15 +255,18 @@ describe('Data Types Tests', () => {
 
         it('should be able to receive parametes as Objects', (done) => {
             const person = new Person(123, 'Person 123', 35);
-            request.put({
-                body: JSON.stringify(person),
-                headers: { 'content-type': 'application/json' },
-                url: 'http://localhost:5674/testparams/people/123'
-            }, (error, response, body) => {
-                const receivedPerson = JSON.parse(body);
-                expect(receivedPerson).toEqual(person);
-                done();
-            });
+            request.put(
+                {
+                    body: JSON.stringify(person),
+                    headers: { 'content-type': 'application/json' },
+                    url: 'http://localhost:5674/testparams/people/123'
+                },
+                (error, response, body) => {
+                    const receivedPerson = JSON.parse(body);
+                    expect(receivedPerson).toEqual(person);
+                    done();
+                }
+            );
         });
 
         it('should be able to return an array of Objects', (done) => {
@@ -259,99 +278,122 @@ describe('Data Types Tests', () => {
         });
 
         it('should be able to receive objects that follow size constraints', (done) => {
-            request.post({
-                body: JSON.stringify(new Person(123, 'person', 35)),
-                headers: { 'content-type': 'application/json' },
-                url: 'http://localhost:5674/testparams/people'
-            }, function (error, response, body) {
-                expect(response.statusCode).toEqual(201);
-                expect(response.headers['location']).toEqual('/testparams/people/123');
-                const result: Person = JSON.parse(body);
-                expect(result.id).toEqual(123);
-                done();
-            });
+            request.post(
+                {
+                    body: JSON.stringify(new Person(123, 'person', 35)),
+                    headers: { 'content-type': 'application/json' },
+                    url: 'http://localhost:5674/testparams/people'
+                },
+                (error, response, body) => {
+                    expect(response.statusCode).toEqual(201);
+                    expect(response.headers['location']).toEqual('/testparams/people/123');
+                    const result: Person = JSON.parse(body);
+                    expect(result.id).toEqual(123);
+                    done();
+                }
+            );
         });
 
         it('should be able to reject objects that do not follow size constraints', (done) => {
-            request.post({
-                body: JSON.stringify(new Person(123,
-                    'this is a very large payload that should be rejected', 35)),
-                headers: { 'content-type': 'application/json' },
-                url: 'http://localhost:5674/testparams/people'
-            }, function (error, response, body) {
-                expect(response.statusCode).toEqual(413);
-                done();
-            });
+            request.post(
+                {
+                    body: JSON.stringify(new Person(123, 'this is a very large payload that should be rejected', 35)),
+                    headers: { 'content-type': 'application/json' },
+                    url: 'http://localhost:5674/testparams/people'
+                },
+                (error, response) => {
+                    expect(response.statusCode).toEqual(413);
+                    done();
+                }
+            );
         });
 
         it('should be able to send a Date into a json object ', (done) => {
             const date = new Date();
-            request.post({
-                body: {
-                    param1: date.toString(),
-                    param2: date
+            request.post(
+                {
+                    body: {
+                        param1: date.toString(),
+                        param2: date
+                    },
+                    json: true,
+                    url: 'http://localhost:5674/testparams/date'
                 },
-                json: true,
-                url: 'http://localhost:5674/testparams/date'
-            }, (error, response, body) => {
-                expect(body).toEqual('OK');
-                done();
-            });
+                (error, response, body) => {
+                    expect(body).toEqual('OK');
+                    done();
+                }
+            );
         });
     });
 
     describe('A rest Service', () => {
         it('should parse header and cookies correclty', (done) => {
-            request({
-                headers: { 'my-header': 'header value', 'Cookie': 'my-cookie=cookie value' },
-                url: 'http://localhost:5674/testparams/headers'
-            }, (error, response, body) => {
-                expect(body).toEqual('cookie: cookie value|header: header value');
-                done();
-            });
+            request(
+                {
+                    headers: { 'my-header': 'header value', Cookie: 'my-cookie=cookie value' },
+                    url: 'http://localhost:5674/testparams/headers'
+                },
+                (error, response, body) => {
+                    expect(body).toEqual('cookie: cookie value|header: header value');
+                    done();
+                }
+            );
         });
 
         it('should read parameters as class property', (done) => {
-            request({
-                headers: { 'my-header': 'header value' },
-                url: 'http://localhost:5674/testparams/myheader'
-            }, (error, response, body) => {
-                expect(body).toEqual('header: header value');
-                done();
-            });
+            request(
+                {
+                    headers: { 'my-header': 'header value' },
+                    url: 'http://localhost:5674/testparams/myheader'
+                },
+                (error, response, body) => {
+                    expect(body).toEqual('header: header value');
+                    done();
+                }
+            );
         });
 
         it('should parse multi param as query param', (done) => {
-            request.post({
-                url: 'http://localhost:5674/testparams/multi-param?param=myQueryValue'
-            }, (error, response, body) => {
-                expect(body).toEqual('myQueryValue');
-                done();
-            });
+            request.post(
+                {
+                    url: 'http://localhost:5674/testparams/multi-param?param=myQueryValue'
+                },
+                (error, response, body) => {
+                    expect(body).toEqual('myQueryValue');
+                    done();
+                }
+            );
         });
 
         it('should parse multi param as form param', (done) => {
             const form = {
-                'param': 'formParam'
+                param: 'formParam'
             };
-            request.post({
-                'form': form,
-                'url': 'http://localhost:5674/testparams/multi-param'
-            }, (error, response, body) => {
-                expect(body).toEqual('formParam');
-                expect(response.statusCode).toEqual(200);
-                done();
-            });
+            request.post(
+                {
+                    form: form,
+                    url: 'http://localhost:5674/testparams/multi-param'
+                },
+                (error, response, body) => {
+                    expect(body).toEqual('formParam');
+                    expect(response.statusCode).toEqual(200);
+                    done();
+                }
+            );
         });
 
         it('should accept Context parameters', (done) => {
-            request({
-                url: 'http://localhost:5674/testparams/context?q=123'
-            }, (error, response, body) => {
-                expect(body).toEqual('true');
-                expect(response.statusCode).toEqual(201);
-                done();
-            });
+            request(
+                {
+                    url: 'http://localhost:5674/testparams/context?q=123'
+                },
+                (error, response, body) => {
+                    expect(body).toEqual('true');
+                    expect(response.statusCode).toEqual(201);
+                    done();
+                }
+            );
         });
 
         it('should accept file parameters', (done) => {
@@ -366,158 +408,203 @@ describe('Data Types Tests', () => {
         });
 
         it('should use sent value for query param that defines a default', (done) => {
-            request({
-                url: 'http://localhost:5674/testparams/default-query?limit=5&prefix=test&expand=false'
-            }, (error, response, body) => {
-                expect(body).toEqual('limit:5|prefix:test|expand:false');
-                done();
-            });
+            request(
+                {
+                    url: 'http://localhost:5674/testparams/default-query?limit=5&prefix=test&expand=false'
+                },
+                (error, response, body) => {
+                    expect(body).toEqual('limit:5|prefix:test|expand:false');
+                    done();
+                }
+            );
         });
 
         it('should use provided default value for missing query param', (done) => {
-            request({
-                url: 'http://localhost:5674/testparams/default-query'
-            }, (error, response, body) => {
-                expect(body).toEqual('limit:20|prefix:default|expand:true');
-                done();
-            });
+            request(
+                {
+                    url: 'http://localhost:5674/testparams/default-query'
+                },
+                (error, response, body) => {
+                    expect(body).toEqual('limit:20|prefix:default|expand:true');
+                    done();
+                }
+            );
         });
 
         it('should handle empty string value for default parameter', (done) => {
-            request({
-                url: 'http://localhost:5674/testparams/default-query?limit=&prefix=&expand='
-            }, (error, response, body) => {
-                expect(body).toEqual('limit:NaN|prefix:|expand:false');
-                done();
-            });
+            request(
+                {
+                    url: 'http://localhost:5674/testparams/default-query?limit=&prefix=&expand='
+                },
+                (error, response, body) => {
+                    expect(body).toEqual('limit:NaN|prefix:|expand:false');
+                    done();
+                }
+            );
         });
 
         it('should use sent value for optional query param', (done) => {
-            request({
-                url: 'http://localhost:5674/testparams/optional-query?limit=5&prefix=test&expand=false'
-            }, (error, response, body) => {
-                expect(body).toEqual('limit:5|prefix:test|expand:false');
-                done();
-            });
+            request(
+                {
+                    url: 'http://localhost:5674/testparams/optional-query?limit=5&prefix=test&expand=false'
+                },
+                (error, response, body) => {
+                    expect(body).toEqual('limit:5|prefix:test|expand:false');
+                    done();
+                }
+            );
         });
 
         it('should use undefined as value for missing optional query param', (done) => {
-            request({
-                url: 'http://localhost:5674/testparams/optional-query'
-            }, (error, response, body) => {
-                expect(body).toEqual('limit:undefined|prefix:undefined|expand:undefined');
-                done();
-            });
+            request(
+                {
+                    url: 'http://localhost:5674/testparams/optional-query'
+                },
+                (error, response, body) => {
+                    expect(body).toEqual('limit:undefined|prefix:undefined|expand:undefined');
+                    done();
+                }
+            );
         });
 
         it('should handle empty string value for optional parameter', (done) => {
-            request({
-                url: 'http://localhost:5674/testparams/optional-query?limit=&prefix=&expand='
-            }, (error, response, body) => {
-                expect(body).toEqual('limit:NaN|prefix:|expand:false');
-                done();
-            });
+            request(
+                {
+                    url: 'http://localhost:5674/testparams/optional-query?limit=&prefix=&expand='
+                },
+                (error, response, body) => {
+                    expect(body).toEqual('limit:NaN|prefix:|expand:false');
+                    done();
+                }
+            );
         });
     });
     describe('Download Service', () => {
         it('should return a file', (done) => {
-            request({
-                url: 'http://localhost:5674/testparams/download'
-            }, (error, response, body) => {
-                expect(response.headers['content-type']).toEqual('application/javascript');
-                expect(_.startsWith(body.toString(), '\'use strict\';')).toEqual(true);
-                done();
-            });
+            request(
+                {
+                    url: 'http://localhost:5674/testparams/download'
+                },
+                (error, response, body) => {
+                    expect(response.headers['content-type']).toEqual('application/javascript');
+                    expect(_.startsWith(body.toString(), "'use strict';")).toEqual(true);
+                    done();
+                }
+            );
         });
         it('should return a referenced file', (done) => {
-            request({
-                url: 'http://localhost:5674/testparams/download/ref'
-            }, (error, response, body) => {
-                expect(_.startsWith(body.toString(), '\'use strict\';')).toEqual(true);
-                done();
-            });
+            request(
+                {
+                    url: 'http://localhost:5674/testparams/download/ref'
+                },
+                (error, response, body) => {
+                    expect(_.startsWith(body.toString(), "'use strict';")).toEqual(true);
+                    done();
+                }
+            );
         });
     });
 
     describe('Raw Body Service', () => {
         it('should accept a string as a body', (done) => {
             const data = '1;2;3;4;\n5;6;7;8;\n9;10;11;12;';
-            request.post({
-                body: data,
-                headers: { 'content-type': 'text/plain' },
-                url: 'http://localhost:5674/testparams/stringbody'
-            }, (error, response, body) => {
-                expect(body).toEqual(data);
-                done();
-            });
+            request.post(
+                {
+                    body: data,
+                    headers: { 'content-type': 'text/plain' },
+                    url: 'http://localhost:5674/testparams/stringbody'
+                },
+                (error, response, body) => {
+                    expect(body).toEqual(data);
+                    done();
+                }
+            );
         });
 
         it('should accept a buffer as a body', (done) => {
             const data = Buffer.from('1;2;3;4;\n5;6;7;8;\n9;10;11;12;');
-            request.post({
-                body: data,
-                headers: { 'content-type': 'text/plain' },
-                url: 'http://localhost:5674/testparams/rawbody'
-            }, (error, response, body) => {
-                expect(body).toEqual('true');
-                done();
-            });
+            request.post(
+                {
+                    body: data,
+                    headers: { 'content-type': 'text/plain' },
+                    url: 'http://localhost:5674/testparams/rawbody'
+                },
+                (error, response, body) => {
+                    expect(body).toEqual('true');
+                    done();
+                }
+            );
         });
 
         it('should accept a string as a body with custom mediatype', (done) => {
             const data = '1;2;3;4;\n5;6;7;8;\n9;10;11;12;';
-            request.post({
-                body: data,
-                headers: { 'content-type': 'text/myformat' },
-                url: 'http://localhost:5674/testparams/stringbodytype'
-            }, (error, response, body) => {
-                expect(body).toEqual(data);
-                done();
-            });
+            request.post(
+                {
+                    body: data,
+                    headers: { 'content-type': 'text/myformat' },
+                    url: 'http://localhost:5674/testparams/stringbodytype'
+                },
+                (error, response, body) => {
+                    expect(body).toEqual(data);
+                    done();
+                }
+            );
         });
 
         it('should accept a string as a body with custom mediatype', (done) => {
             const data = '1;2;3;4;\n5;6;7;8;\n9;10;11;12;';
-            request.post({
-                body: data,
-                headers: { 'content-type': 'text/plain' },
-                url: 'http://localhost:5674/testparams/stringbodytype'
-            }, (error, response, body) => {
-                expect(body).toEqual('{}');
-                done();
-            });
+            request.post(
+                {
+                    body: data,
+                    headers: { 'content-type': 'text/plain' },
+                    url: 'http://localhost:5674/testparams/stringbodytype'
+                },
+                (error, response, body) => {
+                    expect(body).toEqual('{}');
+                    done();
+                }
+            );
         });
     });
 
     describe('No Response Service', () => {
         it('should not send a value when NoResponse is returned', (done) => {
-            request({
-                url: 'http://localhost:5674/testreturn/noresponse'
-            }, (error, response, body) => {
-                expect(body).toEqual('handled by middleware');
-                done();
-            });
+            request(
+                {
+                    url: 'http://localhost:5674/testreturn/noresponse'
+                },
+                (error, response, body) => {
+                    expect(body).toEqual('handled by middleware');
+                    done();
+                }
+            );
         });
         it('should not be handled as an empty object', (done) => {
-            request({
-                url: 'http://localhost:5674/testreturn/empty'
-            }, (error, response, body) => {
-                const val = JSON.parse(body);
-                expect(Object.keys(val)).toHaveLength(0);
-                done();
-            });
+            request(
+                {
+                    url: 'http://localhost:5674/testreturn/empty'
+                },
+                (error, response, body) => {
+                    const val = JSON.parse(body);
+                    expect(Object.keys(val)).toHaveLength(0);
+                    done();
+                }
+            );
         });
     });
 
     describe('NewResource return type', () => {
         it('should handle types referenced from other modules', (done) => {
-            request.post({
-                url: 'http://localhost:5674/testreturn/externalmodule'
-            }, (error, response, body) => {
-                expect(response.statusCode).toEqual(201);
-                expect(response.headers.location).toEqual('/testreturn/externalmodule/123');
-                done();
-            });
+            request.post(
+                {
+                    url: 'http://localhost:5674/testreturn/externalmodule'
+                },
+                (error, response) => {
+                    expect(response.statusCode).toEqual(201);
+                    expect(response.headers.location).toEqual('/testreturn/externalmodule/123');
+                    done();
+                }
+            );
         });
     });
 
@@ -530,21 +617,21 @@ describe('Data Types Tests', () => {
                 return param;
             }, Person);
             const person = new Person(123, 'Person 123', 35, 424242);
-            request.put({
-                body: JSON.stringify(person),
-                headers: { 'content-type': 'application/json' },
-                url: 'http://localhost:5674/testparams/people/123'
-            }, (error, response, body) => {
-                const receivedPerson = JSON.parse(body);
-                expect(receivedPerson.salary).toEqual(434343);
-                Server.removeParameterConverter(Person);
-                done();
-            });
+            request.put(
+                {
+                    body: JSON.stringify(person),
+                    headers: { 'content-type': 'application/json' },
+                    url: 'http://localhost:5674/testparams/people/123'
+                },
+                (error, response, body) => {
+                    const receivedPerson = JSON.parse(body);
+                    expect(receivedPerson.salary).toEqual(434343);
+                    Server.removeParameterConverter(Person);
+                    done();
+                }
+            );
         });
     });
-
-
-
 });
 
 let server: any;
@@ -554,7 +641,7 @@ export function startApi(): Promise<void> {
         const app: express.Application = express();
         app.set('env', 'test');
         Server.buildServices(app, TestParamsService, TestReturnService);
-        app.use('/testreturn', (req, res, next) => {
+        app.use('/testreturn', (req, res) => {
             if (!res.headersSent) {
                 res.send('handled by middleware');
             }

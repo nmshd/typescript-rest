@@ -1,5 +1,4 @@
 import * as express from 'express';
-import * as _ from 'lodash';
 import * as request from 'request';
 import { ContextRequest, Errors, Path, POST, PreProcessor, Server } from '../../src/typescript-rest';
 
@@ -12,7 +11,7 @@ export class PreprocessedService {
     @Path('test')
     @POST
     @PreProcessor(preprocessor2)
-    public test(body: any) {
+    public test(_body: any) {
         return this.request.preprocessor1 && this.request.preprocessor2;
     }
 
@@ -20,9 +19,13 @@ export class PreprocessedService {
     @POST
     @PreProcessor(asyncPreprocessor1)
     @PreProcessor(asyncPreprocessor2) // multiple preprocessors needed to test async
-    public asynctest(body: any) {
-        return this.request.preprocessor1 && (!this.request.preprocessor2) &&
-            this.request.asyncPreproocessor1 && this.request.asyncPreproocessor2;
+    public asynctest(_body: any) {
+        return (
+            this.request.preprocessor1 &&
+            !this.request.preprocessor2 &&
+            this.request.asyncPreproocessor1 &&
+            this.request.asyncPreproocessor2
+        );
     }
 }
 
@@ -42,10 +45,13 @@ async function asyncPreprocessor1(req: PreprocessedRequest) {
         throw new Errors.BadRequestError();
     }
     req.asyncPreproocessor1 = true;
+
+    return Promise.resolve();
 }
 
 async function asyncPreprocessor2(req: PreprocessedRequest) {
     req.asyncPreproocessor2 = true;
+    return Promise.resolve();
 }
 
 interface PreprocessedRequest extends express.Request {
@@ -56,7 +62,6 @@ interface PreprocessedRequest extends express.Request {
 }
 
 describe('Preprocessor Tests', () => {
-
     beforeAll(() => {
         return startApi();
     });
@@ -67,47 +72,59 @@ describe('Preprocessor Tests', () => {
 
     describe('Synchronous Preprocessors', () => {
         it('should validate before handling the request', (done) => {
-            request.post({
-                body: JSON.stringify({ valid: true }),
-                headers: { 'content-type': 'application/json' },
-                url: 'http://localhost:5674/preprocessor/test'
-            }, (error, response, body) => {
-                expect(body).toEqual('true');
-                done();
-            });
+            request.post(
+                {
+                    body: JSON.stringify({ valid: true }),
+                    headers: { 'content-type': 'application/json' },
+                    url: 'http://localhost:5674/preprocessor/test'
+                },
+                (error, response, body) => {
+                    expect(body).toEqual('true');
+                    done();
+                }
+            );
         });
         it('should fail validation when body is invalid', (done) => {
-            request.post({
-                body: JSON.stringify({}),
-                headers: { 'content-type': 'application/json' },
-                url: 'http://localhost:5674/preprocessor/test'
-            }, (error, response, body) => {
-                expect(response.statusCode).toEqual(400);
-                done();
-            });
+            request.post(
+                {
+                    body: JSON.stringify({}),
+                    headers: { 'content-type': 'application/json' },
+                    url: 'http://localhost:5674/preprocessor/test'
+                },
+                (error, response) => {
+                    expect(response.statusCode).toEqual(400);
+                    done();
+                }
+            );
         });
     });
 
     describe('Assynchronous Preprocessors', () => {
         it('should validate before handling the request', (done) => {
-            request.post({
-                body: JSON.stringify({ valid: true, asyncValid: true }),
-                headers: { 'content-type': 'application/json' },
-                url: 'http://localhost:5674/preprocessor/asynctest'
-            }, (error, response, body) => {
-                expect(body).toEqual('true');
-                done();
-            });
+            request.post(
+                {
+                    body: JSON.stringify({ valid: true, asyncValid: true }),
+                    headers: { 'content-type': 'application/json' },
+                    url: 'http://localhost:5674/preprocessor/asynctest'
+                },
+                (error, response, body) => {
+                    expect(body).toEqual('true');
+                    done();
+                }
+            );
         });
         it('should fail validation when body is invalid', (done) => {
-            request.post({
-                body: JSON.stringify({ valid: true }),
-                headers: { 'content-type': 'application/json' },
-                url: 'http://localhost:5674/preprocessor/asynctest'
-            }, (error, response, body) => {
-                expect(response.statusCode).toEqual(400);
-                done();
-            });
+            request.post(
+                {
+                    body: JSON.stringify({ valid: true }),
+                    headers: { 'content-type': 'application/json' },
+                    url: 'http://localhost:5674/preprocessor/asynctest'
+                },
+                (error, response) => {
+                    expect(response.statusCode).toEqual(400);
+                    done();
+                }
+            );
         });
     });
 });

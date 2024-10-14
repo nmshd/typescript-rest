@@ -5,7 +5,6 @@ import 'reflect-metadata';
 import { MethodParam, ParamType, ServiceClass, ServiceMethod } from '../server/model/metadata';
 import { ServerContainer } from '../server/server-container';
 
-
 /**
  * A decorator to be used on class properties or on service method arguments
  * to inform that the decorated property or argument should be bound to the
@@ -26,8 +25,7 @@ import { ServerContainer } from '../server/server-container';
  * [[ServiceContext]] instance.
  */
 export function Context(...args: Array<any>) {
-    return new ParameterDecorator('Context').withType(ParamType.context)
-        .decorateParameterOrProperty(args);
+    return new ParameterDecorator('Context').withType(ParamType.context).decorateParameterOrProperty(args);
 }
 
 /**
@@ -50,7 +48,8 @@ export function Context(...args: Array<any>) {
  * request.
  */
 export function ContextRequest(...args: Array<any>) {
-    return new ParameterDecorator('ContextRequest').withType(ParamType.context_request)
+    return new ParameterDecorator('ContextRequest')
+        .withType(ParamType.context_request)
         .decorateParameterOrProperty(args);
 }
 
@@ -74,7 +73,8 @@ export function ContextRequest(...args: Array<any>) {
  * response object.
  */
 export function ContextResponse(...args: Array<any>) {
-    return new ParameterDecorator('ContextResponse').withType(ParamType.context_response)
+    return new ParameterDecorator('ContextResponse')
+        .withType(ParamType.context_response)
         .decorateParameterOrProperty(args);
 }
 
@@ -98,8 +98,7 @@ export function ContextResponse(...args: Array<any>) {
  * middleware the current request processing.
  */
 export function ContextNext(...args: Array<any>) {
-    return new ParameterDecorator('ContextNext').withType(ParamType.context_next)
-        .decorateParameterOrProperty(args);
+    return new ParameterDecorator('ContextNext').withType(ParamType.context_next).decorateParameterOrProperty(args);
 }
 
 /**
@@ -141,10 +140,8 @@ export function ContextLanguage(...args: Array<any>) {
  * ```
  */
 export function ContextAccept(...args: Array<any>) {
-    return new ParameterDecorator('ContextAccept').withType(ParamType.context_accept)
-        .decorateParameterOrProperty(args);
+    return new ParameterDecorator('ContextAccept').withType(ParamType.context_accept).decorateParameterOrProperty(args);
 }
-
 
 /**
  * Creates a mapping between a fragment of the requested path and
@@ -172,7 +169,9 @@ export function ContextAccept(...args: Array<any>) {
  * And pass 123 as the id argument on getPerson method's call.
  */
 export function PathParam(name: string) {
-    return new ParameterDecorator('PathParam').withType(ParamType.path).withName(name)
+    return new ParameterDecorator('PathParam')
+        .withType(ParamType.path)
+        .withName(name)
         .decorateNamedParameterOrProperty();
 }
 
@@ -199,7 +198,9 @@ export function PathParam(name: string) {
  * argument on addAvatar method's call.
  */
 export function FileParam(name: string) {
-    return new ParameterDecorator('FileParam').withType(ParamType.file).withName(name)
+    return new ParameterDecorator('FileParam')
+        .withType(ParamType.file)
+        .withName(name)
         .decorateNamedParameterOrProperty();
 }
 
@@ -226,7 +227,9 @@ export function FileParam(name: string) {
  * argument on addAvatar method's call.
  */
 export function FilesParam(name: string) {
-    return new ParameterDecorator('FilesParam').withType(ParamType.files).withName(name)
+    return new ParameterDecorator('FilesParam')
+        .withType(ParamType.files)
+        .withName(name)
         .decorateNamedParameterOrProperty();
 }
 
@@ -255,7 +258,9 @@ export function FilesParam(name: string) {
  * And pass 'joe' as the name argument on getPerson method's call.
  */
 export function QueryParam(name: string) {
-    return new ParameterDecorator('QueryParam').withType(ParamType.query).withName(name)
+    return new ParameterDecorator('QueryParam')
+        .withType(ParamType.query)
+        .withName(name)
         .decorateNamedParameterOrProperty();
 }
 
@@ -279,7 +284,9 @@ export function QueryParam(name: string) {
  * header called 'header' to the header argument on getPerson method's call.
  */
 export function HeaderParam(name: string) {
-    return new ParameterDecorator('HeaderParam').withType(ParamType.header).withName(name)
+    return new ParameterDecorator('HeaderParam')
+        .withType(ParamType.header)
+        .withName(name)
         .decorateNamedParameterOrProperty();
 }
 
@@ -303,7 +310,9 @@ export function HeaderParam(name: string) {
  * cookie called 'cookie' to the cookie argument on getPerson method's call.
  */
 export function CookieParam(name: string) {
-    return new ParameterDecorator('CookieParam').withType(ParamType.cookie).withName(name)
+    return new ParameterDecorator('CookieParam')
+        .withType(ParamType.cookie)
+        .withName(name)
         .decorateNamedParameterOrProperty();
 }
 
@@ -328,7 +337,9 @@ export function CookieParam(name: string) {
  * method's call.
  */
 export function FormParam(name: string) {
-    return new ParameterDecorator('FormParam').withType(ParamType.form).withName(name)
+    return new ParameterDecorator('FormParam')
+        .withType(ParamType.form)
+        .withName(name)
         .decorateNamedParameterOrProperty();
 }
 
@@ -354,8 +365,7 @@ export function FormParam(name: string) {
  * received in the current request.
  */
 export function Param(name: string) {
-    return new ParameterDecorator('Param').withType(ParamType.param).withName(name)
-        .decorateNamedParameterOrProperty();
+    return new ParameterDecorator('Param').withType(ParamType.param).withName(name).decorateNamedParameterOrProperty();
 }
 
 class ParameterDecorator {
@@ -399,16 +409,24 @@ class ParameterDecorator {
     }
 
     private decorateParameter(target: Object, propertyKey: string, parameterIndex: number) {
-        const serviceMethod: ServiceMethod = ServerContainer.get().registerServiceMethod(target.constructor, propertyKey);
-        if (serviceMethod) { // does not intercept constructor
+        const serviceMethod: ServiceMethod = ServerContainer.get().registerServiceMethod(
+            target.constructor,
+            propertyKey
+        );
+        if (serviceMethod) {
+            // does not intercept constructor
             const paramTypes = Reflect.getOwnMetadata('design:paramtypes', target, propertyKey);
 
             while (paramTypes && serviceMethod.parameters.length < paramTypes.length) {
-                serviceMethod.parameters.push(new MethodParam(null,
-                    paramTypes[serviceMethod.parameters.length], ParamType.body));
+                serviceMethod.parameters.push(
+                    new MethodParam(null, paramTypes[serviceMethod.parameters.length], ParamType.body)
+                );
             }
-            serviceMethod.parameters[parameterIndex] =
-                new MethodParam(this.name, paramTypes[parameterIndex], this.paramType);
+            serviceMethod.parameters[parameterIndex] = new MethodParam(
+                this.name,
+                paramTypes[parameterIndex],
+                this.paramType
+            );
         }
     }
 
@@ -422,7 +440,3 @@ class ParameterDecorator {
         });
     }
 }
-
-
-
-

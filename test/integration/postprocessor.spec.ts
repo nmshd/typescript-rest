@@ -1,5 +1,4 @@
 import * as express from 'express';
-import * as _ from 'lodash';
 import * as request from 'request';
 import { Path, POST, PostProcessor, Server } from '../../src/typescript-rest';
 
@@ -32,14 +31,15 @@ function postprocessor2(req: express.Request, res: express.Response) {
 
 async function asyncPostprocessor1(req: express.Request, res: express.Response) {
     res.setHeader('x-asyncpostprocessor1', '1');
+    return Promise.resolve();
 }
 
 async function asyncPostprocessor2(req: express.Request, res: express.Response) {
     res.setHeader('x-asyncpostprocessor2', '1');
+    return Promise.resolve();
 }
 
 describe('Postprocessor Tests', () => {
-
     beforeAll(() => {
         return startApi();
     });
@@ -50,28 +50,34 @@ describe('Postprocessor Tests', () => {
 
     describe('Synchronous Postrocessors', () => {
         it('should run after handling the request', (done) => {
-            request.post({
-                headers: { 'content-type': 'application/json' },
-                url: 'http://localhost:5674/postprocessor/test'
-            }, (error, response, body) => {
-                expect(response.headers['x-postprocessor1']).toEqual('1');
-                expect(response.headers['x-postprocessor2']).toEqual('1');
-                done();
-            });
+            request.post(
+                {
+                    headers: { 'content-type': 'application/json' },
+                    url: 'http://localhost:5674/postprocessor/test'
+                },
+                (error, response) => {
+                    expect(response.headers['x-postprocessor1']).toEqual('1');
+                    expect(response.headers['x-postprocessor2']).toEqual('1');
+                    done();
+                }
+            );
         });
     });
 
     describe('Assynchronous Postprocessors', () => {
         it('should run after handling the request', (done) => {
-            request.post({
-                headers: { 'content-type': 'application/json' },
-                url: 'http://localhost:5674/postprocessor/asynctest'
-            }, (error, response, body) => {
-                expect(response.headers['x-postprocessor1']).toEqual('1');
-                expect(response.headers['x-asyncpostprocessor1']).toEqual('1');
-                expect(response.headers['x-asyncpostprocessor2']).toEqual('1');
-                done();
-            });
+            request.post(
+                {
+                    headers: { 'content-type': 'application/json' },
+                    url: 'http://localhost:5674/postprocessor/asynctest'
+                },
+                (error, response) => {
+                    expect(response.headers['x-postprocessor1']).toEqual('1');
+                    expect(response.headers['x-asyncpostprocessor1']).toEqual('1');
+                    expect(response.headers['x-asyncpostprocessor2']).toEqual('1');
+                    done();
+                }
+            );
         });
     });
 });

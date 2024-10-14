@@ -3,20 +3,20 @@ consumes:
     - application/json
 definitions:
     Address:
-        description: ""
+        description: ''
         properties:
             street:
                 type: string
-                description: ""
+                description: ''
         required:
             - street
         type: object
     Person:
-        description: ""
+        description: ''
         properties:
             name:
                 type: string
-                description: ""
+                description: ''
             address:
                 $ref: '#/definitions/Address'
         required:
@@ -39,7 +39,7 @@ paths:
                     description: Ok
                     schema:
                         type: string
-            description: ""
+            description: ''
             parameters: []
     /mypath/secondpath:
         get:
@@ -53,12 +53,11 @@ paths:
                         $ref: '#/definitions/Person'
             description: 'Esta eh a da classe'
             parameters:
-                -
-                    description: 'Esta eh a description do param teste'
-                    in: query
-                    name: testParam
-                    required: false
-                    type: string
+                - description: 'Esta eh a description do param teste'
+                  in: query
+                  name: testParam
+                  required: false
+                  type: string
     /promise:
         get:
             operationId: PromiseServiceTest
@@ -71,12 +70,11 @@ paths:
                         $ref: '#/definitions/Person'
             description: 'Esta eh a da classe'
             parameters:
-                -
-                    description: 'Esta eh a description do param teste'
-                    in: query
-                    name: testParam
-                    required: false
-                    type: string
+                - description: 'Esta eh a description do param teste'
+                  in: query
+                  name: testParam
+                  required: false
+                  type: string
         post:
             operationId: PromiseServiceTestPost
             produces:
@@ -86,15 +84,14 @@ paths:
                     description: Ok
                     schema:
                         $ref: '#/definitions/Person'
-            description: ""
+            description: ''
             parameters:
-                -
-                    description: ""
-                    in: body
-                    name: obj
-                    required: true
-                    schema:
-                        $ref: '#/definitions/Person'
+                - description: ''
+                  in: body
+                  name: obj
+                  required: true
+                  schema:
+                      $ref: '#/definitions/Person'
 produces:
     - application/json
 swagger: '2.0'

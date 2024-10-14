@@ -1,6 +1,5 @@
 jest.mock('../../src/server/server-container');
 
-import * as _ from 'lodash';
 import { Server } from '../../src/server/server';
 import { ServerContainer } from '../../src/server/server-container';
 
@@ -17,39 +16,39 @@ describe('Server', () => {
         Server.immutable(false);
     });
 
-    it('should be able to define a custom cookie secret', async () => {
+    it('should be able to define a custom cookie secret', () => {
         const secret = 'my-secret';
         Server.setCookiesSecret(secret);
 
-        expect(get).toBeCalledTimes(1);
+        expect(get).toHaveBeenCalledTimes(1);
         expect(server.cookiesSecret).toEqual(secret);
     });
 
-    it('should be able to define a custom cookie decoder', async () => {
+    it('should be able to define a custom cookie decoder', () => {
         const decoder = jest.fn();
         Server.setCookiesDecoder(decoder);
 
-        expect(get).toBeCalledTimes(1);
+        expect(get).toHaveBeenCalledTimes(1);
         expect(server.cookiesDecoder).toEqual(decoder);
     });
 
-    it('should be able to define a custom destination folder for uploaded files', async () => {
+    it('should be able to define a custom destination folder for uploaded files', () => {
         const target = './target-dir';
         Server.setFileDest(target);
 
-        expect(get).toBeCalledTimes(1);
+        expect(get).toHaveBeenCalledTimes(1);
         expect(server.fileDest).toEqual(target);
     });
 
-    it('should be able to define a custom filter for uploaded files', async () => {
+    it('should be able to define a custom filter for uploaded files', () => {
         const filter = jest.fn();
         Server.setFileFilter(filter);
 
-        expect(get).toBeCalledTimes(1);
+        expect(get).toHaveBeenCalledTimes(1);
         expect(server.fileFilter).toEqual(filter);
     });
 
-    it('should be able to define a custom limit for uploaded files', async () => {
+    it('should be able to define a custom limit for uploaded files', () => {
         const limits = {
             fieldNameSize: 100,
             fieldSize: 1024,
@@ -61,12 +60,11 @@ describe('Server', () => {
         };
         Server.setFileLimits(limits);
 
-        expect(get).toBeCalledTimes(1);
+        expect(get).toHaveBeenCalledTimes(1);
         expect(server.fileLimits).toEqual(limits);
     });
 
-
-    it('should ignore change requests when immutable', async () => {
+    it('should ignore change requests when immutable', () => {
         Server.immutable(true);
         Server.setCookiesSecret(null);
         Server.registerAuthenticator(null);
@@ -78,8 +76,7 @@ describe('Server', () => {
         Server.addParameterConverter(null, null);
         Server.removeParameterConverter(null);
         Server.ignoreNextMiddlewares(false);
-        expect(get).toBeCalledTimes(0);
+        expect(get).toHaveBeenCalledTimes(0);
         expect(Server.isImmutable()).toBeTruthy();
     });
-
 });

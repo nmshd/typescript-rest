@@ -37,8 +37,7 @@ import { ServerContainer } from '../server/server-container';
  * ```
  */
 export function Path(path: string) {
-    return new ServiceDecorator('Path').withProperty('path', path)
-        .createDecorator();
+    return new ServiceDecorator('Path').withProperty('path', path).createDecorator();
 }
 
 /**
@@ -90,7 +89,7 @@ export function Security(roles?: string | Array<string>, name?: string) {
  * function validator(req: express.Request): express.Request {
  *   if (!req.body.userId) {
  *      throw new Errors.BadRequestError("userId not present");
- *   } 
+ *   }
  * }
  * ```
  * And:
@@ -122,7 +121,7 @@ export function PreProcessor(preprocessor: ServiceProcessor) {
  * function processor(req: express.Request): express.Request {
  *   if (!req.body.userId) {
  *      throw new Errors.BadRequestError("userId not present");
- *   } 
+ *   }
  * }
  * ```
  * And:
@@ -167,7 +166,8 @@ export function PostProcessor(postprocessor: ServiceProcessor) {
  */
 export function AcceptLanguage(...languages: Array<string>) {
     languages = _.compact(languages);
-    return new AcceptServiceDecorator('AcceptLanguage').withArrayProperty('languages', languages, true)
+    return new AcceptServiceDecorator('AcceptLanguage')
+        .withArrayProperty('languages', languages, true)
         .createDecorator();
 }
 
@@ -193,8 +193,7 @@ export function AcceptLanguage(...languages: Array<string>) {
  */
 export function Accept(...accepts: Array<string>) {
     accepts = _.compact(accepts);
-    return new AcceptServiceDecorator('Accept').withArrayProperty('accepts', accepts, true)
-        .createDecorator();
+    return new AcceptServiceDecorator('Accept').withArrayProperty('accepts', accepts, true).createDecorator();
 }
 
 /**
@@ -203,8 +202,7 @@ export function Accept(...accepts: Array<string>) {
  * [[bodyParser]](https://www.npmjs.com/package/body-parser)
  */
 export function BodyOptions(options: any) {
-    return new ServiceDecorator('BodyOptions').withProperty('bodyParserOptions', options)
-        .createDecorator();
+    return new ServiceDecorator('BodyOptions').withProperty('bodyParserOptions', options).createDecorator();
 }
 
 /**
@@ -212,8 +210,7 @@ export function BodyOptions(options: any) {
  * The default type is json.
  */
 export function BodyType(type: ParserType) {
-    return new ServiceDecorator('BodyType').withProperty('bodyParserType', type)
-        .createDecorator();
+    return new ServiceDecorator('BodyType').withProperty('bodyParserType', type).createDecorator();
 }
 
 /**
@@ -221,7 +218,8 @@ export function BodyType(type: ParserType) {
  * It makes server does not call next function after service invocation.
  */
 export function IgnoreNextMiddlewares(...args: Array<any>) {
-    return new ServiceDecorator('IgnoreNextMiddlewares').withProperty('ignoreNextMiddlewares', true)
+    return new ServiceDecorator('IgnoreNextMiddlewares')
+        .withProperty('ignoreNextMiddlewares', true)
         .decorateTypeOrMethod(args);
 }
 
@@ -249,8 +247,7 @@ export function Abstract(...args: Array<any>) {
     if (args.length === 1) {
         const classData: ServiceClass = ServerContainer.get().registerServiceClass(args[0]);
         classData.isAbstract = true;
-    }
-    else {
+    } else {
         throw new Error('Invalid @Abstract Decorator declaration.');
     }
 }
@@ -303,7 +300,7 @@ class ServiceDecorator {
     }
 
     protected checkRequiredValue() {
-        this.properties.forEach(property => {
+        this.properties.forEach((property) => {
             if (property.checkRequired()) {
                 throw new Error(`Invalid @${this.decorator} Decorator declaration.`);
             }
@@ -318,20 +315,24 @@ class ServiceDecorator {
     }
 
     protected decorateMethod(target: Function, propertyKey: string) {
-        const serviceMethod: ServiceMethod = ServerContainer.get().registerServiceMethod(target.constructor, propertyKey);
-        if (serviceMethod) { // does not intercept constructor
+        const serviceMethod: ServiceMethod = ServerContainer.get().registerServiceMethod(
+            target.constructor,
+            propertyKey
+        );
+        if (serviceMethod) {
+            // does not intercept constructor
             this.updateMethodMetadada(serviceMethod);
         }
     }
 
     protected updateClassMetadata(classData: ServiceClass) {
-        this.properties.forEach(property => {
+        this.properties.forEach((property) => {
             property.process(classData);
         });
     }
 
     protected updateMethodMetadada(serviceMethod: ServiceMethod) {
-        this.properties.forEach(property => {
+        this.properties.forEach((property) => {
             property.process(serviceMethod);
         });
     }

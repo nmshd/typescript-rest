@@ -6,7 +6,6 @@ import { FileParam, MethodParam, ParamType, ServiceMethod } from '../server/mode
 import { HttpMethod } from '../server/model/server-types';
 import { ServerContainer } from '../server/server-container';
 
-
 /**
  * A decorator to tell the [[Server]] that a method
  * should be called to process HTTP GET requests.
@@ -202,15 +201,21 @@ class MethodDecorator {
     }
 
     public decorateMethod(target: Function, propertyKey: string) {
-        const serviceMethod: ServiceMethod = ServerContainer.get().registerServiceMethod(target.constructor, propertyKey);
-        if (serviceMethod) { // does not intercept constructor
+        const serviceMethod: ServiceMethod = ServerContainer.get().registerServiceMethod(
+            target.constructor,
+            propertyKey
+        );
+        if (serviceMethod) {
+            // does not intercept constructor
             if (!serviceMethod.httpMethod) {
                 serviceMethod.httpMethod = this.httpMethod;
                 this.processServiceMethod(target, propertyKey, serviceMethod);
             } else if (serviceMethod.httpMethod !== this.httpMethod) {
-                throw new Error('Method is already annotated with @' +
-                    HttpMethod[serviceMethod.httpMethod] +
-                    '. You can only map a method to one HTTP verb.');
+                throw new Error(
+                    'Method is already annotated with @' +
+                        HttpMethod[serviceMethod.httpMethod] +
+                        '. You can only map a method to one HTTP verb.'
+                );
             }
         }
     }
@@ -223,7 +228,7 @@ class MethodDecorator {
         const paramTypes = Reflect.getOwnMetadata('design:paramtypes', target, propertyKey);
         this.registerUndecoratedParameters(paramTypes, serviceMethod);
 
-        serviceMethod.parameters.forEach(param => {
+        serviceMethod.parameters.forEach((param) => {
             const processor = MethodDecorator.PROCESSORS.get(param.paramType);
             if (processor) {
                 processor(serviceMethod, param);
@@ -233,7 +238,9 @@ class MethodDecorator {
 
     private registerUndecoratedParameters(paramTypes: any, serviceMethod: ServiceMethod) {
         while (paramTypes && paramTypes.length > serviceMethod.parameters.length) {
-            serviceMethod.parameters.push(new MethodParam(null, paramTypes[serviceMethod.parameters.length], ParamType.body));
+            serviceMethod.parameters.push(
+                new MethodParam(null, paramTypes[serviceMethod.parameters.length], ParamType.body)
+            );
         }
     }
 }
