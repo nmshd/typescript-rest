@@ -76,6 +76,7 @@
     "yamljs": "^0.3.0"
   },
   "devDependencies": {
+    "@js-soft/license-check": "^1.0.9",
     "@nmshd/typescript-ioc": "^3.2.4",
     "@types/debug": "^4.1.12",
     "@types/fs-extra": "^11.0.4",
