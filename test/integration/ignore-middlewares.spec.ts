@@ -21,7 +21,6 @@ export class EndpointTestService {
 
 let middlewareCalled: boolean;
 describe('Customized Endpoint Tests', () => {
-
     beforeAll(() => {
         return startApi();
     });
@@ -69,7 +68,6 @@ describe('Customized Endpoint Tests', () => {
             });
         });
     });
-
 });
 
 let server: any;

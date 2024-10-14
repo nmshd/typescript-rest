@@ -1,7 +1,16 @@
 import * as express from 'express';
-import * as _ from 'lodash';
 import * as request from 'request';
-import { Abstract, Context, GET, HttpMethod, Path, PathParam, PUT, Server, ServiceContext } from '../../src/typescript-rest';
+import {
+    Abstract,
+    Context,
+    GET,
+    HttpMethod,
+    Path,
+    PathParam,
+    PUT,
+    Server,
+    ServiceContext
+} from '../../src/typescript-rest';
 
 @Path('/pathtest')
 export class PathTestService {
@@ -85,7 +94,6 @@ export class SuperClassService extends BaseApi {
 }
 
 describe('Paths Tests', () => {
-
     beforeAll(() => {
         return startApi();
     });
@@ -112,25 +120,25 @@ describe('Paths Tests', () => {
 
     describe('Path Annotation', () => {
         it('should configure a path', (done) => {
-            request('http://localhost:5674/pathtest', function (error, response, body) {
+            request('http://localhost:5674/pathtest', (error, response, body) => {
                 expect(body).toEqual('OK');
                 done();
             });
         });
         it('should configure a path without an initial /', (done) => {
-            request('http://localhost:5674/pathtest2', function (error, response, body) {
+            request('http://localhost:5674/pathtest2', (error, response, body) => {
                 expect(body).toEqual('OK');
                 done();
             });
         });
         it('should be able to build a composed path bwetween class and method', (done) => {
-            request('http://localhost:5674/pathtest2/secondpath', function (error, response, body) {
+            request('http://localhost:5674/pathtest2/secondpath', (error, response, body) => {
                 expect(body).toEqual('OK');
                 done();
             });
         });
         it('should be able to register services with present only on methods of a class', (done) => {
-            request('http://localhost:5674/methodpath', function (error, response, body) {
+            request('http://localhost:5674/methodpath', (error, response, body) => {
                 expect(body).toEqual('OK');
                 done();
             });
@@ -139,20 +147,20 @@ describe('Paths Tests', () => {
 
     describe('Service on Subclass', () => {
         it('should return OK when calling a method of its super class', (done) => {
-            request('http://localhost:5674/superclasspath/123', function (error, response, body) {
+            request('http://localhost:5674/superclasspath/123', (error, response, body) => {
                 expect(body).toEqual('OK_' + 123);
                 done();
             });
         });
 
         it('should return OK when calling an overloaded method of its super class', (done) => {
-            request('http://localhost:5674/superclasspath/overload/123', function (error, response, body) {
+            request('http://localhost:5674/superclasspath/overload/123', (error, response, body) => {
                 expect(body).toEqual('superclass_OK_' + 123);
                 done();
             });
         });
         it('should return OK when calling an overloaded PUT method of its super class', (done) => {
-            request.put('http://localhost:5674/superclasspath/overload/123', function (error, response, body) {
+            request.put('http://localhost:5674/superclasspath/overload/123', (error, response, body) => {
                 expect(body).toEqual('superclass_OK_' + 123);
                 done();
             });
@@ -165,8 +173,7 @@ export function startApi(): Promise<void> {
     return new Promise<void>((resolve, reject) => {
         const app: express.Application = express();
         app.set('env', 'test');
-        Server.buildServices(app, PathTestService, PathOnlyOnMethodTestService,
-            SubPathTestService, SuperClassService);
+        Server.buildServices(app, PathTestService, PathOnlyOnMethodTestService, SubPathTestService, SuperClassService);
         server = app.listen(5674, (err?: any) => {
             if (err) {
                 return reject(err);

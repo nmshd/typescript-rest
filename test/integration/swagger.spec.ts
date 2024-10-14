@@ -8,7 +8,6 @@ let server: any;
 let swaggerFile: any;
 
 describe('Swagger Tests', () => {
-
     beforeAll(() => {
         return startApi();
     });
@@ -23,7 +22,7 @@ describe('Swagger Tests', () => {
                 const swaggerDocument: any = YAML.parse(body);
                 const expectedSwagger = _.cloneDeep(swaggerFile);
                 expectedSwagger.host = 'localhost:5674';
-                expectedSwagger.schemes = ["http"];
+                expectedSwagger.schemes = ['http'];
                 expect(expectedSwagger).toEqual(swaggerDocument);
                 done();
             });
