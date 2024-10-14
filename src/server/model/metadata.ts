@@ -38,7 +38,7 @@ export class ServiceClass {
     }
 
     public hasProperties(): boolean {
-        return (this.properties && this.properties.size > 0);
+        return this.properties && this.properties.size > 0;
     }
 }
 
@@ -74,7 +74,6 @@ export class ServiceMethod {
  * Metadata for File parameters on REST methods
  */
 export class FileParam {
-
     public name: string;
     public singleFile: boolean;
     constructor(name: string, singleFile: boolean) {
@@ -87,7 +86,6 @@ export class FileParam {
  * Metadata for REST service method parameters
  */
 export class MethodParam {
-
     public name: string;
     public type: Function;
     public paramType: ParamType;

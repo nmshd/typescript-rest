@@ -32,15 +32,17 @@ export class ServiceInvoker {
             } else if (this.debugger.enabled) {
                 this.debugger('Ignoring next middlewares');
             }
-        }
-        catch (err) {
+        } catch (err) {
             context.next(err);
         }
     }
 
     private mustCallNext() {
-        return !ServerContainer.get().ignoreNextMiddlewares &&
-            !this.serviceMethod.ignoreNextMiddlewares && !this.serviceClass.ignoreNextMiddlewares;
+        return (
+            !ServerContainer.get().ignoreNextMiddlewares &&
+            !this.serviceMethod.ignoreNextMiddlewares &&
+            !this.serviceClass.ignoreNextMiddlewares
+        );
     }
 
     private async runPreProcessors(context: ServiceContext): Promise<void> {
@@ -78,8 +80,10 @@ export class ServiceInvoker {
     }
 
     private getMethodToCall() {
-        return this.serviceClass.targetClass.prototype[this.serviceMethod.name]
-            || this.serviceClass.targetClass[this.serviceMethod.name];
+        return (
+            this.serviceClass.targetClass.prototype[this.serviceMethod.name] ||
+            this.serviceClass.targetClass[this.serviceMethod.name]
+        );
     }
 
     private checkAcceptance(context: ServiceContext): void {
@@ -137,13 +141,15 @@ export class ServiceInvoker {
     private buildArgumentsList(context: ServiceContext) {
         const result: Array<any> = new Array<any>();
 
-        this.serviceMethod.parameters.forEach(param => {
+        this.serviceMethod.parameters.forEach((param) => {
             this.debugger('Processing service parameter [%s]', param.name || 'body');
-            result.push(this.processParameter(context, {
-                name: param.name,
-                propertyType: param.type,
-                type: param.paramType
-            }));
+            result.push(
+                this.processParameter(context, {
+                    name: param.name,
+                    propertyType: param.type,
+                    type: param.paramType
+                })
+            );
         });
 
         return result;
@@ -189,9 +195,11 @@ export class ServiceInvoker {
                     }
                     break;
                 default:
-                    value === null 
-                        ? context.response.send(value) 
-                        : await this.sendComplexValue(context, value);
+                    if (value === null) {
+                        context.response.send(value);
+                    } else {
+                        await this.sendComplexValue(context, value);
+                    }
             }
         } else {
             this.debugger('Do not send any response value');
@@ -201,18 +209,14 @@ export class ServiceInvoker {
     private async sendComplexValue(context: ServiceContext, value: any) {
         if (value.filePath && value instanceof DownloadResource) {
             await this.downloadResToPromise(context.response, value);
-        }
-        else if (value instanceof DownloadBinaryData) {
+        } else if (value instanceof DownloadBinaryData) {
             this.sendFile(context, value);
-        }
-        else if (value.location && value instanceof ReferencedResource) {
+        } else if (value.location && value instanceof ReferencedResource) {
             await this.sendReferencedResource(context, value);
-        }
-        else if (value.then && value.catch) {
+        } else if (value.then && value.catch) {
             const val = await value;
             await this.sendValue(val, context);
-        }
-        else {
+        } else {
             this.debugger('Sending a json value: %j', value);
             context.response.json(value);
         }
@@ -225,8 +229,7 @@ export class ServiceInvoker {
         if (value.body) {
             context.response.status(value.statusCode);
             await this.sendValue(value.body, context);
-        }
-        else {
+        } else {
             context.response.sendStatus(value.statusCode);
         }
     }
@@ -239,8 +242,7 @@ export class ServiceInvoker {
                 'Content-Type': value.mimeType,
                 'Content-disposition': 'attachment;filename=' + value.fileName
             });
-        }
-        else {
+        } else {
             context.response.writeHead(200, {
                 'Content-Length': value.content.length,
                 'Content-Type': value.mimeType

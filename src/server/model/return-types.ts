@@ -79,7 +79,10 @@ export class DownloadResource {
      * @param filePath The file path to download.
      * @param fileName The file name
      */
-    constructor(public filePath: string, public fileName: string) { }
+    constructor(
+        public filePath: string,
+        public fileName: string
+    ) {}
 }
 
 /**
@@ -92,7 +95,11 @@ export class DownloadBinaryData {
      * @param mimeType The mime-type to be passed on Content-Type header.
      * @param fileName The file name
      */
-    constructor(public content: Buffer, public mimeType: string, public fileName?: string) { }
+    constructor(
+        public content: Buffer,
+        public mimeType: string,
+        public fileName?: string
+    ) {}
 }
 
 /**

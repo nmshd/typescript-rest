@@ -6,8 +6,10 @@
 export abstract class HttpError extends Error {
     public statusCode: number;
 
-    constructor(name: string,
-        public message: string) {
+    constructor(
+        name: string,
+        public message: string
+    ) {
         super(message);
         this.name = name;
     }

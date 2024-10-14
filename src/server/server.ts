@@ -7,10 +7,7 @@ import * as _ from 'lodash';
 import 'multer';
 import * as path from 'path';
 import * as YAML from 'yamljs';
-import {
-    FileLimits, HttpMethod, ParameterConverter,
-    ServiceAuthenticator, ServiceFactory
-} from './model/server-types';
+import { FileLimits, HttpMethod, ParameterConverter, ServiceAuthenticator, ServiceFactory } from './model/server-types';
 import { ServerContainer } from './server-container';
 
 const serverDebugger = debug('typescript-rest:server:build');
@@ -51,7 +48,7 @@ export class Server {
                 cwd: baseDir
             });
 
-            _.values(loadedModules).forEach(serviceModule => {
+            _.values(loadedModules).forEach((serviceModule) => {
                 _.values(serviceModule)
                     .filter((service: Function) => typeof service === 'function')
                     .forEach((service: Function) => {
@@ -64,7 +61,9 @@ export class Server {
             } catch (e) {
                 serverDebugger('Error loading services for pattern: %j. Error: %o', patterns, e);
                 serverDebugger('ImportedTypes: %o', importedTypes);
-                throw new TypeError(`Error loading services for pattern: ${JSON.stringify(patterns)}. Error: ${e.message}`);
+                throw new TypeError(
+                    `Error loading services for pattern: ${JSON.stringify(patterns)}. Error: ${e.message}`
+                );
             }
         }
     }
@@ -98,9 +97,11 @@ export class Server {
      */
     public static getPaths(): Array<string> {
         const result = new Array<string>();
-        ServerContainer.get().getPaths().forEach(value => {
-            result.push(value);
-        });
+        ServerContainer.get()
+            .getPaths()
+            .forEach((value) => {
+                result.push(value);
+            });
 
         return result;
     }
@@ -116,7 +117,7 @@ export class Server {
                 const mod = require(serviceFactory);
                 factory = mod.default ? mod.default : mod;
             } else {
-                factory = serviceFactory as ServiceFactory;
+                factory = serviceFactory;
             }
 
             serverDebugger('Registering a new serviceFactory');
@@ -141,9 +142,11 @@ export class Server {
      */
     public static getHttpMethods(servicePath: string): Array<HttpMethod> {
         const result = new Array<HttpMethod>();
-        ServerContainer.get().getHttpMethods(servicePath).forEach(value => {
-            result.push(value);
-        });
+        ServerContainer.get()
+            .getHttpMethods(servicePath)
+            .forEach((value) => {
+                result.push(value);
+            });
 
         return result;
     }
@@ -193,8 +196,13 @@ export class Server {
      * Set a Function to control which files are accepted to upload
      * @param filter The filter function
      */
-    public static setFileFilter(filter: (req: Express.Request, file: Express.Multer.File,
-        callback: (error: Error, acceptFile: boolean) => void) => void) {
+    public static setFileFilter(
+        filter: (
+            req: Express.Request,
+            file: Express.Multer.File,
+            callback: (error: Error, acceptFile: boolean) => void
+        ) => void
+    ) {
         if (!Server.locked) {
             serverDebugger('Setting a new filter for files');
             ServerContainer.get().fileFilter = filter;
@@ -239,7 +247,7 @@ export class Server {
      * Makes the server ignore next middlewares for all endpoints.
      * It has the same effect than add @IgnoreNextMiddlewares to all
      * services.
-     * @param value - true to ignore next middlewares. 
+     * @param value - true to ignore next middlewares.
      */
     public static ignoreNextMiddlewares(value: boolean) {
         if (!Server.locked) {
@@ -268,14 +276,18 @@ export class Server {
                 swaggerDocument.schemes = options.schemes;
             }
 
-            router.get(path.posix.join('/', options.endpoint, 'json'), (req, res, next) => {
+            router.get(path.posix.join('/', options.endpoint, 'json'), (req, res) => {
                 res.send(swaggerDocument);
             });
-            router.get(path.posix.join('/', options.endpoint, 'yaml'), (req, res, next) => {
+            router.get(path.posix.join('/', options.endpoint, 'yaml'), (req, res) => {
                 res.set('Content-Type', 'text/vnd.yaml');
                 res.send(YAML.stringify(swaggerDocument, 1000));
             });
-            router.use(path.posix.join('/', options.endpoint), swaggerUi.serve, swaggerUi.setup(swaggerDocument, options.swaggerUiOptions));
+            router.use(
+                path.posix.join('/', options.endpoint),
+                swaggerUi.serve,
+                swaggerUi.setup(swaggerDocument, options.swaggerUiOptions)
+            );
         }
     }
 
@@ -285,8 +297,7 @@ export class Server {
         let swaggerDocument: any;
         if (_.endsWith(options.filePath, '.yml') || _.endsWith(options.filePath, '.yaml')) {
             swaggerDocument = YAML.load(options.filePath);
-        }
-        else {
+        } else {
             swaggerDocument = fs.readJSONSync(options.filePath);
         }
         serverDebugger('Loaded swagger configurations: %j', swaggerDocument);

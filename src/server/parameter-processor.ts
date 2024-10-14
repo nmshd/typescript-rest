@@ -37,15 +37,27 @@ export class ParameterProcessor {
         this.debugger.build('Initializing parameters processors');
         const parameterMapper: Map<ParamType, ParameterContextMapper> = new Map();
 
-        parameterMapper.set(ParamType.path, (context, property) => this.convertType(context.request.params[property.name], property.propertyType));
-        parameterMapper.set(ParamType.query, (context, property) => this.convertType(context.request.query[property.name] as string, property.propertyType));
-        parameterMapper.set(ParamType.header, (context, property) => this.convertType(context.request.header(property.name), property.propertyType));
-        parameterMapper.set(ParamType.cookie, (context, property) => this.convertType(context.request.cookies[property.name], property.propertyType));
-        parameterMapper.set(ParamType.body, (context, property) => this.convertType(context.request.body, property.propertyType));
+        parameterMapper.set(ParamType.path, (context, property) =>
+            this.convertType(context.request.params[property.name], property.propertyType)
+        );
+        parameterMapper.set(ParamType.query, (context, property) =>
+            this.convertType(context.request.query[property.name] as string, property.propertyType)
+        );
+        parameterMapper.set(ParamType.header, (context, property) =>
+            this.convertType(context.request.header(property.name), property.propertyType)
+        );
+        parameterMapper.set(ParamType.cookie, (context, property) =>
+            this.convertType(context.request.cookies[property.name], property.propertyType)
+        );
+        parameterMapper.set(ParamType.body, (context, property) =>
+            this.convertType(context.request.body, property.propertyType)
+        );
         parameterMapper.set(ParamType.file, (context, property) => {
             this.debugger.runtime('Processing file parameter');
-            // @ts-ignore
-            const files: Array<Express.Multer.File> = context.request.files ? context.request.files[property.name] : null;
+            const files: Array<Express.Multer.File> = context.request.files
+                ? // @ts-expect-error will be an array
+                  context.request.files[property.name]
+                : null;
             if (files && files.length > 0) {
                 return files[0];
             }
@@ -53,13 +65,14 @@ export class ParameterProcessor {
         });
         parameterMapper.set(ParamType.files, (context, property) => {
             this.debugger.runtime('Processing files parameter');
-            // @ts-ignore
-            return context.request.files[property.name];
+            // @ts-expect-error will be an array
+            return context.request.files?.[property.name];
         });
-        parameterMapper.set(ParamType.form, (context, property) => this.convertType(context.request.body[property.name], property.propertyType));
+        parameterMapper.set(ParamType.form, (context, property) =>
+            this.convertType(context.request.body[property.name], property.propertyType)
+        );
         parameterMapper.set(ParamType.param, (context, property) => {
-            const paramValue = context.request.body[property.name] ||
-                context.request.query[property.name];
+            const paramValue = context.request.body[property.name] || context.request.query[property.name];
             return this.convertType(paramValue, property.propertyType);
         });
         parameterMapper.set(ParamType.context, (context) => context);
@@ -90,4 +103,3 @@ export class ParameterProcessor {
         }
     }
 }
-
