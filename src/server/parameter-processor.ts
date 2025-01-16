@@ -92,8 +92,8 @@ export class ParameterProcessor {
             case 'Number':
                 return paramValue === undefined ? paramValue : parseFloat(paramValue as string);
             case 'Boolean':
-                if(typeof paramValue === "string"){
-                    return paramValue.toLowerCase() === 'true'
+                if (typeof paramValue === 'string') {
+                    return paramValue.toLowerCase() === 'true';
                 }
                 return paramValue === undefined ? paramValue : paramValue === true;
             default:
