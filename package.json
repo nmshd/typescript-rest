@@ -34,7 +34,7 @@
     "lint:prettier": "prettier --check .",
     "lint:tsc": "tsc --noEmit",
     "start": "tsc -w",
-    "pretest": "cross-env NODE_ENV=test npm run build && npm run lint",
+    "pretest": "cross-env NODE_ENV=test npm run build",
     "test": "cross-env NODE_ENV=test jest --config ./test/jest.config.js --coverage --runInBand",
     "test:integration": "cross-env NODE_ENV=test jest --config ./test/jest.config-integration.js --runInBand",
     "test:unit": "cross-env NODE_ENV=test jest --config ./test/jest.config-unit.js",

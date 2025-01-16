@@ -169,6 +169,13 @@ export class TestParamsService {
     }
 
     @POST
+    @Path('boolean-as-body-param')
+    @BodyOptions({ strict: false })
+    public testBooleanAsBodyParam(expand: boolean): string {
+        return `expand:${expand}`;
+    }
+
+    @POST
     @Path('upload')
     public testUploadFile(
         @FileParam('myFile') file: Express.Multer.File,
@@ -508,6 +515,20 @@ describe('Data Types Tests', () => {
                 },
                 (error, response, body) => {
                     expect(body).toEqual('True:false|TRUE:undefined|False:undefined|FALSE:undefined');
+                    done();
+                }
+            );
+        });
+
+        it('should handle boolean parameters as param in body', (done) => {
+            request.post(
+                {
+                    url: 'http://localhost:5674/testparams/boolean-as-body-param',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(true)
+                },
+                (error, response, body) => {
+                    expect(body).toEqual('expand:true');
                     done();
                 }
             );
