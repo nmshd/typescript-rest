@@ -92,7 +92,10 @@ export class ParameterProcessor {
             case 'Number':
                 return paramValue === undefined ? paramValue : parseFloat(paramValue as string);
             case 'Boolean':
-                return paramValue === undefined ? paramValue : paramValue === 'true' || paramValue === true;
+                if (paramValue === undefined) return paramValue;
+                if (typeof paramValue === 'boolean') return paramValue;
+
+                return paramValue.toLowerCase() === 'true';
             default:
                 let converter = ServerContainer.get().paramConverters.get(paramType);
                 if (!converter) {
