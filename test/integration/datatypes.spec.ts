@@ -157,6 +157,16 @@ export class TestParamsService {
     ): string {
         return `limit:${limit}|prefix:${prefix}|expand:${expand}`;
     }
+    @GET
+    @Path('boolean-casing')
+    public testBooleanCasing(
+        @QueryParam('True') True?: boolean,
+        @QueryParam('TRUE') TRUE?: boolean,
+        @QueryParam('False') False?: boolean,
+        @QueryParam('FALSE') FALSE?: boolean
+    ): string {
+        return `True:${True}|TRUE:${TRUE}|False:${False}|FALSE:${FALSE}`;
+    }
 
     @POST
     @Path('upload')
@@ -474,6 +484,30 @@ describe('Data Types Tests', () => {
                 },
                 (error, response, body) => {
                     expect(body).toEqual('limit:NaN|prefix:|expand:false');
+                    done();
+                }
+            );
+        });
+
+        it('should handle boolean parameters with different casings', (done) => {
+            request(
+                {
+                    url: 'http://localhost:5674/testparams/boolean-casing?True=True&TRUE=TRUE&False=False&FALSE=FALSE'
+                },
+                (error, response, body) => {
+                    expect(body).toEqual('True:true|TRUE:true|False:false|FALSE:false');
+                    done();
+                }
+            );
+        });
+
+        it('should handle boolean parameters as undefined', (done) => {
+            request(
+                {
+                    url: 'http://localhost:5674/testparams/boolean-casing?True='
+                },
+                (error, response, body) => {
+                    expect(body).toEqual('True:false|TRUE:undefined|False:undefined|FALSE:undefined');
                     done();
                 }
             );
