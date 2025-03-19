@@ -12,11 +12,11 @@
     "node server"
   ],
   "bugs": {
-    "url": "https://github.com/@nmshd/typescript-rest/issues"
+    "url": "https://github.com/nmshd/typescript-rest/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/@nmshd/typescript-rest.git"
+    "url": "https://github.com/nmshd/typescript-rest.git"
   },
   "license": "MIT",
   "main": "./dist/typescript-rest.js",
