@@ -1,6 +1,6 @@
 {
   "name": "@nmshd/typescript-rest",
-  "version": "3.1.0",
+  "version": "3.1.1",
   "description": "A Library to create RESTFul APIs with Typescript",
   "keywords": [
     "API",
@@ -12,11 +12,11 @@
     "node server"
   ],
   "bugs": {
-    "url": "https://github.com/@nmshd/typescript-rest/issues"
+    "url": "https://github.com/nmshd/typescript-rest/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/@nmshd/typescript-rest.git"
+    "url": "https://github.com/nmshd/typescript-rest.git"
   },
   "license": "MIT",
   "main": "./dist/typescript-rest.js",
