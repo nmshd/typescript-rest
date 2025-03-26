@@ -75,7 +75,11 @@ export class ServiceInvoker {
         if (this.postProcessors.length) {
             await this.runPostProcessors(context);
         }
-        this.processResponseHeaders(context);
+
+        if (!context.response.headersSent) {
+            this.processResponseHeaders(context);
+        }
+
         await this.sendValue(result, context);
     }
 
