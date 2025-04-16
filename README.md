@@ -12,13 +12,13 @@ It can be used to define your APIs using decorators.
 
 **Table of Contents**
 
--   [REST Services for Typescript](#rest-services-for-typescript)
-    -   [Installation](#installation)
-    -   [Configuration](#configuration)
-    -   [Basic Usage](#basic-usage)
-    -   [Using with an IoC Container](#using-with-an-ioc-container)
-    -   [Complete Guide](#complete-guide)
-    -   [Boilerplate Project](#boilerplate-project)
+- [REST Services for Typescript](#rest-services-for-typescript)
+    - [Installation](#installation)
+    - [Configuration](#configuration)
+    - [Basic Usage](#basic-usage)
+    - [Using with an IoC Container](#using-with-an-ioc-container)
+    - [Complete Guide](#complete-guide)
+    - [Boilerplate Project](#boilerplate-project)
 
 ## Installation
 
@@ -90,9 +90,7 @@ npm install @nmshd/typescript-rest-ioc --save
 Then add a rest.config file in the root of your project:
 
 ```json
-{
-    "serviceFactory": "@nmshd/typescript-rest-ioc"
-}
+{ "serviceFactory": "@nmshd/typescript-rest-ioc" }
 ```
 
 And you can use Injections, Request scopes and all the features of the IoC Container. It is possible to use it with any other IoC Container, like Inversify.
