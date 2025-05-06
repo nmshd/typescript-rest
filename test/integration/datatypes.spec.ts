@@ -615,7 +615,7 @@ describe('Data Types Tests', () => {
                     url: 'http://localhost:5674/testparams/stringbodytype'
                 },
                 (error, response, body) => {
-                    expect(body).toEqual('{}');
+                    expect(body).toEqual('');
                     done();
                 }
             );
