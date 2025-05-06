@@ -72,7 +72,7 @@ export class ParameterProcessor {
             this.convertType(context.request.body[property.name], property.propertyType)
         );
         parameterMapper.set(ParamType.param, (context, property) => {
-            const paramValue = context.request.body[property.name] || context.request.query[property.name];
+            const paramValue = (context.request.body ?? {})[property.name] || context.request.query[property.name];
             return this.convertType(paramValue, property.propertyType);
         });
         parameterMapper.set(ParamType.context, (context) => context);
