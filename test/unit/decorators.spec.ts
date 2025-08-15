@@ -139,7 +139,7 @@ describe('Decorators', () => {
             expect(serviceMethod.authenticator.default).toContain('test-role2');
         });
 
-        it('should add a security validation to accept any role when undefined is received', () => {
+        it('should throw an error when no roles are specified', () => {
             expect(() =>
                 // @ts-expect-error: Testing error throwing
                 serviceDecorators.Security([])(
