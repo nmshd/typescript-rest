@@ -1,7 +1,7 @@
 import * as express from 'express';
 import { Errors, routeRequiresAuthorization } from '../../../src/typescript-rest';
 
-describe('routeRequiresRoles middleware', () => {
+describe('routeRequiresAuthorization middleware', () => {
     const res = {} as any as express.Response;
 
     test.each([

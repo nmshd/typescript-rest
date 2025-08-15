@@ -2,15 +2,8 @@ import * as debug from 'debug';
 import { NextFunction, Request, Response } from 'express';
 import * as Errors from '../server/model/errors';
 
-const debuggerInstance = debug('typescript-rest:middlewares:routeRequiresRoles');
+const debuggerInstance = debug('typescript-rest:middlewares:routeRequiresAuthorization');
 
-/**
- * Middleware to check if the user has the required roles to access a route.
- *
- * @param authenticator extracts roles from the request.
- * @param permittedRoles can be a single role or an array of roles. If at least one of the roles matches the user's roles, access is granted.
- * @returns the middleware function that checks if the user has the required roles.
- */
 export function routeRequiresAuthorization(
     authenticator: { getRoles: (req: Request, res: Response) => Array<string> },
     ...permittedRoles: [string, ...Array<string>]
@@ -29,10 +22,8 @@ export function routeRequiresAuthorization(
         const requestRoles = authenticator.getRoles(req, res);
         if (debuggerInstance.enabled) debuggerInstance('Validating authentication roles: <%j>.', requestRoles);
 
-        const transformedRoles = requestRoles.map(transformRole);
-        const isAuthorized = permittedRoles.some((requiredRole: string) =>
-            isRoleMatched(requiredRole, transformedRoles)
-        );
+        const transformedRoles = requestRoles.map(transformUserRole);
+        const isAuthorized = permittedRoles.some((permittedRole) => isRoleMatched(permittedRole, transformedRoles));
         if (!isAuthorized) {
             next(new Errors.ForbiddenError('You are not allowed to access this endpoint.'));
             return;
@@ -42,18 +33,20 @@ export function routeRequiresAuthorization(
     };
 }
 
-function isRoleMatched(requiredRole: string, userRoles: Array<RegExp>): boolean {
+function isRoleMatched(permittedRole: string, userRoles: Array<RegExp>): boolean {
     for (const userRole of userRoles) {
-        const isMatch = userRole.test(requiredRole);
+        const isMatch = userRole.test(permittedRole);
         if (isMatch) return true;
     }
 
     return false;
 }
 
-function transformRole(role: string): RegExp {
-    if (!role.includes('*')) return new RegExp(`^${role}$`);
+function transformUserRole(userRole: string): RegExp {
+    if (!userRole.includes('*')) return new RegExp(`^${userRole}$`);
 
-    const regexString = role.replaceAll('**', '[a-zA-Z0-9_-]+(:[a-zA-Z0-9_-]+){0,}').replaceAll('*', '[a-zA-Z0-9_-]+');
+    const regexString = userRole
+        .replaceAll('**', '[a-zA-Z0-9_-]+(:[a-zA-Z0-9_-]+){0,}')
+        .replaceAll('*', '[a-zA-Z0-9_-]+');
     return new RegExp(`^${regexString}$`);
 }
