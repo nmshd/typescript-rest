@@ -8,18 +8,18 @@ const debuggerInstance = debug('typescript-rest:middlewares:routeRequiresRoles')
  * Middleware to check if the user has the required roles to access a route.
  *
  * @param authenticator extracts roles from the request.
- * @param requiredRoles can be a single role or an array of roles. At least one role must be specified. If at least one of the roles matches the user's roles, access is granted.
+ * @param roles can be a single role or an array of roles. At least one role must be specified. If at least one of the roles matches the user's roles, access is granted.
  * @returns the middleware function that checks if the user has the required roles.
  */
-export function routeRequiresRoles(
+export function routeRequiresAuthorization(
     authenticator: { getRoles: (req: Request, res: Response) => Array<string> },
-    requiredRoles: Array<string> | string
+    ...roles: [string, ...Array<string>]
 ) {
-    if (typeof requiredRoles === 'string') requiredRoles = [requiredRoles];
-    if (requiredRoles.length === 0) throw new Error('At least one role must be specified.');
+    if (typeof roles === 'string') roles = [roles];
+    if (roles.length === 0) throw new Error('At least one role must be specified.');
 
     const roleRegex = /^[a-zA-Z0-9_-]+(:[a-zA-Z0-9_-]+){0,}$/;
-    const nonMatchingRoles = requiredRoles.filter((role) => !roleRegex.test(role));
+    const nonMatchingRoles = roles.filter((role) => !roleRegex.test(role));
     if (nonMatchingRoles.length > 0) {
         throw new Error(
             `Invalid required role(s) specified: ${nonMatchingRoles.join(', ')}. Roles must match the pattern: ${roleRegex}.`
@@ -31,9 +31,7 @@ export function routeRequiresRoles(
         if (debuggerInstance.enabled) debuggerInstance('Validating authentication roles: <%j>.', requestRoles);
 
         const transformedRoles = requestRoles.map(transformRole);
-        const isAuthorized = requiredRoles.some((requiredRole: string) =>
-            isRoleMatched(requiredRole, transformedRoles)
-        );
+        const isAuthorized = roles.some((requiredRole: string) => isRoleMatched(requiredRole, transformedRoles));
         if (!isAuthorized) {
             next(new Errors.ForbiddenError('You are not allowed to access this endpoint.'));
             return;

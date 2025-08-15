@@ -7,7 +7,7 @@ import * as debug from 'debug';
 import * as express from 'express';
 import * as _ from 'lodash';
 import * as multer from 'multer';
-import { routeRequiresRoles } from '../middlewares/routeRequiresRoles';
+import { routeRequiresAuthorization } from '../middlewares/routeRequiresAuthorization';
 import * as Errors from './model/errors';
 import { ServiceClass, ServiceMethod } from './model/metadata';
 import {
@@ -337,6 +337,8 @@ export class ServerContainer {
             const authenticatorNames: Array<string> = Object.keys(authenticatorMap);
             for (const authenticatorName of authenticatorNames) {
                 const roles: Array<string> = authenticatorMap[authenticatorName];
+                if (roles.length === 0) continue;
+
                 this.debugger.build(
                     'Registering an authenticator middleware <%s> for method <%s>.',
                     authenticatorName,
@@ -346,15 +348,13 @@ export class ServerContainer {
                 const authenticator = this.getAuthenticator(authenticatorName);
                 if (authenticator.getMiddleware) result.push(authenticator.getMiddleware());
 
-                if (roles.length) {
-                    this.debugger.build(
-                        'Registering a role validator middleware <%s> for method <%s>.',
-                        authenticatorName,
-                        serviceMethod.name
-                    );
-                    this.debugger.build('Roles: <%j>.', roles);
-                    result.push(routeRequiresRoles(authenticator, roles));
-                }
+                this.debugger.build(
+                    'Registering a role validator middleware <%s> for method <%s>.',
+                    authenticatorName,
+                    serviceMethod.name
+                );
+                this.debugger.build('Roles: <%j>.', roles);
+                result.push(routeRequiresAuthorization(authenticator, roles[0], ...roles.slice(1)));
             }
         }
 

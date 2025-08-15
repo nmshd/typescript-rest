@@ -1,5 +1,5 @@
 import * as express from 'express';
-import { Errors, routeRequiresRoles } from '../../../src/typescript-rest';
+import { Errors, routeRequiresAuthorization } from '../../../src/typescript-rest';
 
 describe('routeRequiresRoles middleware', () => {
     const res = {} as any as express.Response;
@@ -47,7 +47,7 @@ describe('routeRequiresRoles middleware', () => {
         const next = jest.fn();
 
         const authenticator = { getRoles: () => userRoles };
-        const fn = routeRequiresRoles(authenticator, requiredRoles);
+        const fn = routeRequiresAuthorization(authenticator, requiredRoles[0], ...requiredRoles.slice(1));
         fn({ userRoles: userRoles } as any as express.Request, res, next);
 
         expect(next).toHaveBeenCalledTimes(1);
@@ -71,7 +71,7 @@ describe('routeRequiresRoles middleware', () => {
         const next = jest.fn();
 
         const authenticator = { getRoles: () => userRoles };
-        const fn = routeRequiresRoles(authenticator, requiredRoles);
+        const fn = routeRequiresAuthorization(authenticator, requiredRoles[0], ...requiredRoles.slice(1));
         fn({ userRoles: userRoles } as any as express.Request, res, next);
 
         expect(next).toHaveBeenCalledTimes(1);
@@ -80,13 +80,16 @@ describe('routeRequiresRoles middleware', () => {
     });
 
     test('should throw an error if no roles are specified', () => {
-        expect(() => routeRequiresRoles({ getRoles: () => [] }, [])).toThrow('At least one role must be specified.');
+        expect(
+            // @ts-expect-error: Testing error throwing
+            () => routeRequiresAuthorization({ getRoles: () => [] })
+        ).toThrow('At least one role must be specified.');
     });
 
     test.each(['admin:', 'admin::core', 'admin::', '*'])(
         'should throw an error because the required role (%s) does not match the pattern',
         (role) => {
-            expect(() => routeRequiresRoles({ getRoles: () => [] }, [role])).toThrow(
+            expect(() => routeRequiresAuthorization({ getRoles: () => [] }, role)).toThrow(
                 'Invalid required role(s) specified'
             );
         }
