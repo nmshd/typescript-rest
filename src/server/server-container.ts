@@ -53,8 +53,7 @@ export class ServerContainer {
     public router: express.Router;
 
     private debugger = {
-        build: debug('typescript-rest:server-container:build'),
-        runtime: debug('typescript-rest:server-container:runtime')
+        build: debug('typescript-rest:server-container:build')
     };
     private upload: multer.Multer;
     private serverClasses: Map<Function, ServiceClass> = new Map<Function, ServiceClass>();
