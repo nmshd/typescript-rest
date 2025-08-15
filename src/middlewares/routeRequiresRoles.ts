@@ -4,6 +4,13 @@ import * as Errors from '../server/model/errors';
 
 const debuggerInstance = debug('typescript-rest:middlewares:routeRequiresRoles');
 
+/**
+ * Middleware to check if the user has the required roles to access a route.
+ *
+ * @param authenticator extracts roles from the request.
+ * @param requiredRoles can be a single role or an array of roles. At least one role must be specified. If at least one of the roles matches the user's roles, access is granted.
+ * @returns the middleware function that checks if the user has the required roles.
+ */
 export function routeRequiresRoles(
     authenticator: { getRoles: (req: Request, res: Response) => Array<string> },
     requiredRoles: Array<string> | string
