@@ -1,6 +1,6 @@
 {
   "name": "@nmshd/typescript-rest",
-  "version": "3.1.6",
+  "version": "3.2.0",
   "description": "A Library to create RESTFul APIs with Typescript",
   "keywords": [
     "API",
