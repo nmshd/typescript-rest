@@ -5,9 +5,9 @@ import * as bodyParser from 'body-parser';
 import * as cookieParser from 'cookie-parser';
 import * as debug from 'debug';
 import * as express from 'express';
-import { NextFunction, Request, Response } from 'express';
 import * as _ from 'lodash';
 import * as multer from 'multer';
+import { routeRequiresRoles } from '../middlewares/routeRequiresRoles';
 import * as Errors from './model/errors';
 import { ServiceClass, ServiceMethod } from './model/metadata';
 import {
@@ -114,7 +114,7 @@ export class ServerContainer {
         if (this.authenticator) {
             this.authenticator.forEach((auth, name) => {
                 this.debugger.build('Initializing authenticator: %s', name);
-                auth.initialize(this.router);
+                if (auth.initialize) auth.initialize(this.router);
             });
         }
         this.serverClasses.forEach((classData) => {
@@ -337,15 +337,16 @@ export class ServerContainer {
         if (this.authenticator && authenticatorMap) {
             const authenticatorNames: Array<string> = Object.keys(authenticatorMap);
             for (const authenticatorName of authenticatorNames) {
-                let roles: Array<string> = authenticatorMap[authenticatorName];
+                const roles: Array<string> = authenticatorMap[authenticatorName];
                 this.debugger.build(
                     'Registering an authenticator middleware <%s> for method <%s>.',
                     authenticatorName,
                     serviceMethod.name
                 );
+
                 const authenticator = this.getAuthenticator(authenticatorName);
-                result.push(authenticator.getMiddleware());
-                roles = roles.filter((role) => role !== '*');
+                if (authenticator.getMiddleware) result.push(authenticator.getMiddleware());
+
                 if (roles.length) {
                     this.debugger.build(
                         'Registering a role validator middleware <%s> for method <%s>.',
@@ -353,7 +354,7 @@ export class ServerContainer {
                         serviceMethod.name
                     );
                     this.debugger.build('Roles: <%j>.', roles);
-                    result.push(this.buildAuthMiddleware(authenticator, roles));
+                    result.push(routeRequiresRoles(authenticator, roles));
                 }
             }
         }
@@ -365,21 +366,8 @@ export class ServerContainer {
         if (!this.authenticator.has(authenticatorName)) {
             throw new Error(`Invalid authenticator name ${authenticatorName}`);
         }
-        return this.authenticator.get(authenticatorName);
-    }
 
-    private buildAuthMiddleware(authenticator: ServiceAuthenticator, roles: Array<string>): express.RequestHandler {
-        return (req: Request, res: Response, next: NextFunction) => {
-            const requestRoles = authenticator.getRoles(req, res);
-            if (this.debugger.runtime.enabled) {
-                this.debugger.runtime('Validating authentication roles: <%j>.', requestRoles);
-            }
-            if (requestRoles.some((role: string) => roles.indexOf(role) >= 0)) {
-                next();
-            } else {
-                throw new Errors.ForbiddenError();
-            }
-        };
+        return this.authenticator.get(authenticatorName);
     }
 
     private buildParserMiddlewares(
