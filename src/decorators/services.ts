@@ -75,6 +75,9 @@ export function Path(path: string) {
  */
 export function Security(roles: string | [string, ...Array<string>], name?: string) {
     roles = Array.isArray(roles) ? roles : [roles];
+
+    if (roles.length === 0) throw new Error('At least one role must be specified.');
+
     return new SecurityServiceDecorator('Security')
         .withObjectProperty('authenticator', name || 'default', roles)
         .createDecorator();
