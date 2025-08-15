@@ -139,6 +139,17 @@ describe('Decorators', () => {
             expect(serviceMethod.authenticator.default).toContain('test-role2');
         });
 
+        it('should add a security validation to accept any role when undefined is received', () => {
+            expect(() =>
+                // @ts-expect-error: Testing error throwing
+                serviceDecorators.Security([])(
+                    TestService.prototype,
+                    'test',
+                    Object.getOwnPropertyDescriptor(TestService.prototype, 'test')
+                )
+            ).toThrow('At least one role must be specified.');
+        });
+
         it('should set the default authenticator if no name is provided', () => {
             const role: string = 'test-role';
             serviceDecorators.Security(role)(
