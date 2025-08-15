@@ -83,7 +83,7 @@ describe('routeRequiresRoles middleware', () => {
         expect(
             // @ts-expect-error: Testing error throwing
             () => routeRequiresAuthorization({ getRoles: () => [] })
-        ).toThrow('At least one role must be specified.');
+        ).toThrow('At least one permitted role must be specified.');
     });
 
     test.each(['admin:', 'admin::core', 'admin::', '*'])(

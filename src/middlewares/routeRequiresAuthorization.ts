@@ -8,14 +8,14 @@ const debuggerInstance = debug('typescript-rest:middlewares:routeRequiresRoles')
  * Middleware to check if the user has the required roles to access a route.
  *
  * @param authenticator extracts roles from the request.
- * @param permittedRoles can be a single role or an array of roles. At least one role must be specified. If at least one of the roles matches the user's roles, access is granted.
+ * @param permittedRoles can be a single role or an array of roles. If at least one of the roles matches the user's roles, access is granted.
  * @returns the middleware function that checks if the user has the required roles.
  */
 export function routeRequiresAuthorization(
     authenticator: { getRoles: (req: Request, res: Response) => Array<string> },
     ...permittedRoles: [string, ...Array<string>]
 ) {
-    if (permittedRoles.length === 0) throw new Error('At least one role must be specified.');
+    if (permittedRoles.length === 0) throw new Error('At least one permitted role must be specified.');
 
     const roleRegex = /^[a-zA-Z0-9_-]+(:[a-zA-Z0-9_-]+){0,}$/;
     const nonMatchingRoles = permittedRoles.filter((role) => !roleRegex.test(role));
