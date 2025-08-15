@@ -6,8 +6,9 @@ const debuggerInstance = debug('typescript-rest:middlewares:routeRequiresRoles')
 
 export function routeRequiresRoles(
     authenticator: { getRoles: (req: Request, res: Response) => Array<string> },
-    requiredRoles: Array<string>
+    requiredRoles: Array<string> | string
 ) {
+    if (typeof requiredRoles === 'string') requiredRoles = [requiredRoles];
     if (requiredRoles.length === 0) throw new Error('At least one role must be specified.');
 
     const roleRegex = /^[a-zA-Z0-9_-]+(:[a-zA-Z0-9_-]+){0,}$/;
