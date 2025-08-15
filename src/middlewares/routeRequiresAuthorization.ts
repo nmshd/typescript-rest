@@ -15,7 +15,6 @@ export function routeRequiresAuthorization(
     authenticator: { getRoles: (req: Request, res: Response) => Array<string> },
     ...roles: [string, ...Array<string>]
 ) {
-    if (typeof roles === 'string') roles = [roles];
     if (roles.length === 0) throw new Error('At least one role must be specified.');
 
     const roleRegex = /^[a-zA-Z0-9_-]+(:[a-zA-Z0-9_-]+){0,}$/;
