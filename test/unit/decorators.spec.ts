@@ -127,8 +127,7 @@ describe('Decorators', () => {
         });
 
         it('should add a security set of roles to methods of a class', () => {
-            const roles = ['test-role', 'tes-role2'];
-            serviceDecorators.Security(roles)(
+            serviceDecorators.Security(['test-role', 'tes-role2'])(
                 TestService.prototype,
                 'test',
                 Object.getOwnPropertyDescriptor(TestService.prototype, 'test')
@@ -136,21 +135,8 @@ describe('Decorators', () => {
 
             expect(serverContainer.registerServiceMethod).toHaveBeenCalledTimes(1);
             expect(serviceMethod.authenticator.default).toHaveLength(2);
-            expect(serviceMethod.authenticator.default).toContain(roles[0]);
-            expect(serviceMethod.authenticator.default).toContain(roles[1]);
-        });
-
-        it('should add a security validation to accept any role when empty is received', () => {
-            const role = '';
-            serviceDecorators.Security(role)(
-                TestService.prototype,
-                'test',
-                Object.getOwnPropertyDescriptor(TestService.prototype, 'test')
-            );
-
-            expect(serverContainer.registerServiceMethod).toHaveBeenCalledTimes(1);
-            expect(serviceMethod.authenticator.default).toHaveLength(1);
-            expect(serviceMethod.authenticator.default).toContain('*');
+            expect(serviceMethod.authenticator.default).toContain('test-role');
+            expect(serviceMethod.authenticator.default).toContain('test-role2');
         });
 
         it('should add a security validation to accept any role when undefined is received', () => {

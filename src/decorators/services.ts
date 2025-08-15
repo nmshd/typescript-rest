@@ -73,8 +73,8 @@ export function Path(path: string) {
  * GET http://mydomain/people/123 (For all authorized users)
  * ```
  */
-export function Security(roles: string | Array<string>, name?: string) {
-    roles = _.castArray(roles);
+export function Security(roles: string | [string, ...Array<string>], name?: string) {
+    roles = Array.isArray(roles) ? roles : [roles];
     return new SecurityServiceDecorator('Security')
         .withObjectProperty('authenticator', name || 'default', roles)
         .createDecorator();
