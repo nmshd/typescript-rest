@@ -86,7 +86,7 @@ describe('routeRequiresRoles middleware', () => {
         ).toThrow('At least one permitted role must be specified.');
     });
 
-    test.each(['admin:', 'admin::core', 'admin::', '*'])(
+    test.each(['admin:', ':admin', 'admin::core', 'admin::', '::admin', '*', '**'])(
         'should throw an error because the permitted role (%s) does not match the pattern',
         (role) => {
             expect(() => routeRequiresAuthorization({ getRoles: () => [] }, role)).toThrow(
