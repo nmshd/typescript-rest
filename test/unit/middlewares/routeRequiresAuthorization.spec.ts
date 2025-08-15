@@ -65,8 +65,7 @@ describe('routeRequiresAuthorization middleware', () => {
         ],
         [['core:*'], ['core:messages:whatever']],
         [['core:*:*:*'], ['core:messages:whatever']],
-        [['core:*:*:whatever'], ['core:messages:whatever']],
-        [['core:*'], ['core:messages:whatever']]
+        [['core:*:*:whatever'], ['core:messages:whatever']]
     ])('should reject the given (%s) and permitted (%s) roles', (userRoles, permittedRoles) => {
         const next = jest.fn();
 
@@ -79,7 +78,7 @@ describe('routeRequiresAuthorization middleware', () => {
         expect(next).toHaveBeenCalledWith(new Errors.ForbiddenError('You are not allowed to access this endpoint.'));
     });
 
-    test('should throw an error if no roles are specified', () => {
+    test('should throw an error if no permitted roles are specified', () => {
         expect(
             // @ts-expect-error: Testing error throwing
             () => routeRequiresAuthorization({ getRoles: () => [] })
