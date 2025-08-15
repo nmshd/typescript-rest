@@ -43,11 +43,11 @@ describe('routeRequiresRoles middleware', () => {
         [['core:**:whatever'], ['core:messages:whatever:whatever']],
         [['**:whatever'], ['core:messages:whatever']],
         [['**:whatever'], ['core:messages:whatever:whatever']]
-    ])('should accept the given (%s) and required (%s) roles', (userRoles, requiredRoles) => {
+    ])('should accept the given (%s) and permitted (%s) roles', (userRoles, permittedRoles) => {
         const next = jest.fn();
 
         const authenticator = { getRoles: () => userRoles };
-        const fn = routeRequiresAuthorization(authenticator, requiredRoles[0], ...requiredRoles.slice(1));
+        const fn = routeRequiresAuthorization(authenticator, permittedRoles[0], ...permittedRoles.slice(1));
         fn({ userRoles: userRoles } as any as express.Request, res, next);
 
         expect(next).toHaveBeenCalledTimes(1);
@@ -67,11 +67,11 @@ describe('routeRequiresRoles middleware', () => {
         [['core:*:*:*'], ['core:messages:whatever']],
         [['core:*:*:whatever'], ['core:messages:whatever']],
         [['core:*'], ['core:messages:whatever']]
-    ])('should reject the given (%s) and required (%s) roles', (userRoles, requiredRoles) => {
+    ])('should reject the given (%s) and permitted (%s) roles', (userRoles, permittedRoles) => {
         const next = jest.fn();
 
         const authenticator = { getRoles: () => userRoles };
-        const fn = routeRequiresAuthorization(authenticator, requiredRoles[0], ...requiredRoles.slice(1));
+        const fn = routeRequiresAuthorization(authenticator, permittedRoles[0], ...permittedRoles.slice(1));
         fn({ userRoles: userRoles } as any as express.Request, res, next);
 
         expect(next).toHaveBeenCalledTimes(1);
@@ -87,10 +87,10 @@ describe('routeRequiresRoles middleware', () => {
     });
 
     test.each(['admin:', 'admin::core', 'admin::', '*'])(
-        'should throw an error because the required role (%s) does not match the pattern',
+        'should throw an error because the permitted role (%s) does not match the pattern',
         (role) => {
             expect(() => routeRequiresAuthorization({ getRoles: () => [] }, role)).toThrow(
-                'Invalid required role(s) specified'
+                'Invalid permitted role(s) specified'
             );
         }
     );
