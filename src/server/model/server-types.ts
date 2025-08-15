@@ -43,18 +43,22 @@ export class ServiceContext {
      * The resolved language to be used in the current request handling.
      */
     public language: string;
+
     /**
      * The preferred media type to be used in the current request handling.
      */
     public accept: string;
+
     /**
      * The request object.
      */
     public request: express.Request;
+
     /**
      * The response object
      */
     public response: express.Response;
+
     /**
      * The next function. It can be used to delegate to the next middleware
      * registered the processing of the current request.
@@ -107,14 +111,16 @@ export interface ServiceAuthenticator {
      * Get the user list of roles.
      */
     getRoles: (req: express.Request, res: express.Response) => Array<string>;
+
     /**
      * Initialize the authenticator
      */
-    initialize(router: express.Router): void;
+    initialize?: (router: express.Router) => void;
+
     /**
      * Retrieve the middleware used to authenticate users.
      */
-    getMiddleware(): express.RequestHandler;
+    getMiddleware?: () => express.RequestHandler;
 }
 
 export type ServiceProcessor = (req: express.Request, res?: express.Response) => void | Promise<void>;

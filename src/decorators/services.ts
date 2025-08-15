@@ -73,8 +73,11 @@ export function Path(path: string) {
  * GET http://mydomain/people/123 (For all authorized users)
  * ```
  */
-export function Security(roles?: string | Array<string>, name?: string) {
-    roles = _.castArray(roles || '*');
+export function Security(roles: string | [string, ...Array<string>], name?: string) {
+    roles = Array.isArray(roles) ? roles : [roles];
+
+    if (roles.length === 0) throw new Error('At least one role must be specified.');
+
     return new SecurityServiceDecorator('Security')
         .withObjectProperty('authenticator', name || 'default', roles)
         .createDecorator();
