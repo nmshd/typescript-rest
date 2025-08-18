@@ -19,11 +19,11 @@ export function routeRequiresAuthorization(
     }
 
     return (req: Request, res: Response, next: NextFunction) => {
-        const requestRoles = authenticator.getRoles(req, res);
-        if (debuggerInstance.enabled) debuggerInstance('Validating authentication roles: <%j>.', requestRoles);
+        const rawUserRoles = authenticator.getRoles(req, res);
+        if (debuggerInstance.enabled) debuggerInstance('Validating authentication roles: <%j>.', rawUserRoles);
 
-        const transformedRoles = requestRoles.map(transformUserRole);
-        const isAuthorized = permittedRoles.some((permittedRole) => isRoleMatched(permittedRole, transformedRoles));
+        const userRoles = rawUserRoles.map(Role.from);
+        const isAuthorized = permittedRoles.some((r) => isRoleMatched(r, userRoles));
         if (!isAuthorized) {
             next(new Errors.ForbiddenError('You are not allowed to access this endpoint.'));
             return;
@@ -33,20 +33,31 @@ export function routeRequiresAuthorization(
     };
 }
 
-function isRoleMatched(permittedRole: string, userRoles: Array<RegExp>): boolean {
-    for (const userRole of userRoles) {
-        const isMatch = userRole.test(permittedRole);
-        if (isMatch) return true;
-    }
-
-    return false;
+function isRoleMatched(permittedRole: string, userRoles: Array<Role>): boolean {
+    return userRoles.some((userRole) => userRole.matches(permittedRole));
 }
 
-function transformUserRole(userRole: string): RegExp {
-    if (!userRole.includes('*')) return new RegExp(`^${userRole}$`);
+class Role {
+    private roleRegex: RegExp;
 
-    const regexString = userRole
-        .replaceAll('**', '[a-zA-Z0-9_-]+(:[a-zA-Z0-9_-]+){0,}')
-        .replaceAll('*', '[a-zA-Z0-9_-]+');
-    return new RegExp(`^${regexString}$`);
+    private constructor(role: string) {
+        this.roleRegex = this.transformUserRole(role);
+    }
+
+    public static from(role: string): Role {
+        return new Role(role);
+    }
+
+    private transformUserRole(userRole: string): RegExp {
+        if (!userRole.includes('*')) return new RegExp(`^${userRole}$`);
+
+        const regexString = userRole
+            .replaceAll('**', '[a-zA-Z0-9_-]+(:[a-zA-Z0-9_-]+){0,}')
+            .replaceAll('*', '[a-zA-Z0-9_-]+');
+        return new RegExp(`^${regexString}$`);
+    }
+
+    public matches(permittedRole: string): unknown {
+        return this.roleRegex.test(permittedRole);
+    }
 }
