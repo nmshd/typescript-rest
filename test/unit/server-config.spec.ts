@@ -28,8 +28,8 @@ describe('ServerConfig', () => {
         readJSONSync.mockReturnValue(config);
         ServerConfig.configure();
 
-        expect(registerServiceFactory).toBeCalledWith(config.serviceFactory);
-        expect(registerServiceFactory).toBeCalledTimes(1);
+        expect(registerServiceFactory).toHaveBeenCalledWith(config.serviceFactory);
+        expect(registerServiceFactory).toHaveBeenCalledTimes(1);
     });
 
     it('should use a custom service factory configured with relative path', () => {
@@ -44,8 +44,8 @@ describe('ServerConfig', () => {
         readJSONSync.mockReturnValue(config);
         ServerConfig.configure();
 
-        expect(registerServiceFactory).toBeCalledWith(expectedServicePath);
-        expect(registerServiceFactory).toBeCalledTimes(1);
+        expect(registerServiceFactory).toHaveBeenCalledWith(expectedServicePath);
+        expect(registerServiceFactory).toHaveBeenCalledTimes(1);
     });
 
     it('should not use ioc if an error occur while searching for config file', () => {
@@ -57,8 +57,8 @@ describe('ServerConfig', () => {
             });
             ServerConfig.configure();
 
-            expect(registerServiceFactory).toBeCalledTimes(0);
-            expect(consoleError).toBeCalledWith(error);
+            expect(registerServiceFactory).toHaveBeenCalledTimes(0);
+            expect(consoleError).toHaveBeenCalledWith(error);
         } finally {
             consoleError.mockReset();
         }
