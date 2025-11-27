@@ -1,6 +1,6 @@
 {
   "name": "@nmshd/typescript-rest",
-  "version": "3.2.1",
+  "version": "3.2.2",
   "description": "A Library to create RESTFul APIs with Typescript",
   "keywords": [
     "API",
@@ -64,7 +64,7 @@
     "@types/cookie-parser": "^1.4.9",
     "@types/express": "^5.0.3",
     "@types/multer": "^2.0.0",
-    "body-parser": "^2.2.0",
+    "body-parser": "^2.2.1",
     "cookie-parser": "^1.4.7",
     "express": "^5.1.0",
     "fs-extra": "^11.3.2",
