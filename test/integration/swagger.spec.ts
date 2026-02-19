@@ -1,7 +1,8 @@
 import * as express from 'express';
+import { readFileSync } from 'fs';
 import * as _ from 'lodash';
 import * as request from 'request';
-import * as YAML from 'yamljs';
+import * as YAML from 'yaml';
 import { Server } from '../../src/typescript-rest';
 
 let server: any;
@@ -41,7 +42,7 @@ export function startApi(): Promise<void> {
     return new Promise<void>((resolve, reject) => {
         const app: express.Application = express();
         app.set('env', 'test');
-        swaggerFile = YAML.load('./test/data/swagger.yaml');
+        swaggerFile = YAML.parse(readFileSync('./test/data/swagger.yaml', 'utf8'));
         Server.swagger(app, {
             endpoint: 'api-docs',
             filePath: './test/data/swagger.yaml',
