@@ -6,7 +6,7 @@ import * as fs from 'fs-extra';
 import * as _ from 'lodash';
 import 'multer';
 import * as path from 'path';
-import * as YAML from 'yamljs';
+import * as YAML from 'yaml';
 import { FileLimits, HttpMethod, ParameterConverter, ServiceAuthenticator, ServiceFactory } from './model/server-types';
 import { ServerContainer } from './server-container';
 
@@ -281,7 +281,11 @@ export class Server {
             });
             router.get(path.posix.join('/', options.endpoint, 'yaml'), (req, res) => {
                 res.set('Content-Type', 'text/vnd.yaml');
-                res.send(YAML.stringify(swaggerDocument, 1000));
+                res.send(
+                    YAML.stringify(swaggerDocument, {
+                        indent: 4
+                    })
+                );
             });
             router.use(
                 path.posix.join('/', options.endpoint),
@@ -296,7 +300,7 @@ export class Server {
     private static loadSwaggerDocument(options: SwaggerOptions) {
         let swaggerDocument: any;
         if (_.endsWith(options.filePath, '.yml') || _.endsWith(options.filePath, '.yaml')) {
-            swaggerDocument = YAML.load(options.filePath);
+            swaggerDocument = YAML.parse(fs.readFileSync(options.filePath, 'utf8'));
         } else {
             swaggerDocument = fs.readJSONSync(options.filePath);
         }
