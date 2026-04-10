@@ -163,31 +163,33 @@ export class ServerContainer {
             this.resolveProperties(serviceClass, serviceMethod);
         }
 
-        let args: Array<any> = [serviceMethod.resolvedPath];
-        args = args.concat(this.buildSecurityMiddlewares(serviceClass, serviceMethod));
-        args = args.concat(this.buildParserMiddlewares(serviceClass, serviceMethod));
-        args.push(this.buildServiceMiddleware(serviceMethod, serviceClass));
+        const args: [string, ...Array<express.RequestHandler>] = [
+            serviceMethod.resolvedPath,
+            ...this.buildSecurityMiddlewares(serviceClass, serviceMethod),
+            ...this.buildParserMiddlewares(serviceClass, serviceMethod),
+            this.buildServiceMiddleware(serviceMethod, serviceClass)
+        ];
         switch (serviceMethod.httpMethod) {
             case HttpMethod.GET:
-                (this.router.get as any)(...args);
+                this.router.get(...args);
                 break;
             case HttpMethod.POST:
-                (this.router.post as any)(...args);
+                this.router.post(...args);
                 break;
             case HttpMethod.PUT:
-                (this.router.put as any)(...args);
+                this.router.put(...args);
                 break;
             case HttpMethod.DELETE:
-                (this.router.delete as any)(...args);
+                this.router.delete(...args);
                 break;
             case HttpMethod.HEAD:
-                (this.router.head as any)(...args);
+                this.router.head(...args);
                 break;
             case HttpMethod.OPTIONS:
-                (this.router.options as any)(...args);
+                this.router.options(...args);
                 break;
             case HttpMethod.PATCH:
-                (this.router.patch as any)(...args);
+                this.router.patch(...args);
                 break;
 
             default:
