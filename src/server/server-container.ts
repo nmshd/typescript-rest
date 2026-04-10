@@ -169,25 +169,25 @@ export class ServerContainer {
         args.push(this.buildServiceMiddleware(serviceMethod, serviceClass));
         switch (serviceMethod.httpMethod) {
             case HttpMethod.GET:
-                this.router.get.apply(this.router, args);
+                (this.router.get as any)(...args);
                 break;
             case HttpMethod.POST:
-                this.router.post.apply(this.router, args);
+                (this.router.post as any)(...args);
                 break;
             case HttpMethod.PUT:
-                this.router.put.apply(this.router, args);
+                (this.router.put as any)(...args);
                 break;
             case HttpMethod.DELETE:
-                this.router.delete.apply(this.router, args);
+                (this.router.delete as any)(...args);
                 break;
             case HttpMethod.HEAD:
-                this.router.head.apply(this.router, args);
+                (this.router.head as any)(...args);
                 break;
             case HttpMethod.OPTIONS:
-                this.router.options.apply(this.router, args);
+                (this.router.options as any)(...args);
                 break;
             case HttpMethod.PATCH:
-                this.router.patch.apply(this.router, args);
+                (this.router.patch as any)(...args);
                 break;
 
             default:
@@ -477,15 +477,17 @@ export class ServerContainer {
     }
 
     private buildCookieParserMiddleware() {
-        const args = [];
+        const options = this.cookiesDecoder ? { decode: this.cookiesDecoder } : undefined;
+        this.debugger.build('Creating cookie parser with options %j.', [this.cookiesSecret, options]);
+        if (this.cookiesSecret && options) {
+            return cookieParser(this.cookiesSecret, options);
+        }
         if (this.cookiesSecret) {
-            args.push(this.cookiesSecret);
+            return cookieParser(this.cookiesSecret);
         }
-        if (this.cookiesDecoder) {
-            args.push({ decode: this.cookiesDecoder });
+        if (options) {
+            return cookieParser(undefined, options);
         }
-        this.debugger.build('Creating cookie parser with options %j.', args);
-        const middleware = cookieParser.apply(this, args);
-        return middleware;
+        return cookieParser();
     }
 }
