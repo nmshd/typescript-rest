@@ -2,11 +2,11 @@
 'use strict';
 
 import * as bodyParser from 'body-parser';
-import * as cookieParser from 'cookie-parser';
-import * as debug from 'debug';
+import cookieParser from 'cookie-parser';
+import debug from 'debug';
 import * as express from 'express';
 import * as _ from 'lodash';
-import * as multer from 'multer';
+import multer from 'multer';
 import { routeRequiresAuthorization } from '../middlewares/routeRequiresAuthorization';
 import * as Errors from './model/errors';
 import { ServiceClass, ServiceMethod } from './model/metadata';

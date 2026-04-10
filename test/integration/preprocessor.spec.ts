@@ -1,6 +1,6 @@
-import * as express from 'express';
-import * as request from 'request';
+import express from 'express';
 import { ContextRequest, Errors, Path, POST, PreProcessor, Server } from '../../src/typescript-rest';
+import request from './axios-request';
 
 @Path('preprocessor')
 @PreProcessor(preprocessor1)

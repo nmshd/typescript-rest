@@ -1,10 +1,9 @@
 'use strict';
 
 import { Container } from '@nmshd/typescript-ioc';
-import * as express from 'express';
+import express from 'express';
 import * as fs from 'fs';
 import * as _ from 'lodash';
-import * as request from 'request';
 import {
     BodyOptions,
     BodyType,
@@ -28,6 +27,7 @@ import {
     Server,
     ServiceContext
 } from '../../src/typescript-rest';
+import request from './axios-request';
 
 export class Person {
     public id: number;

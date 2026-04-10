@@ -1,4 +1,4 @@
-import * as debug from 'debug';
+import debug from 'debug';
 import { NextFunction, Request, Response } from 'express';
 import * as Errors from '../server/model/errors';
 

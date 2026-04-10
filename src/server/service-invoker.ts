@@ -1,6 +1,6 @@
 'use strict';
 
-import * as debug from 'debug';
+import debug from 'debug';
 import * as express from 'express';
 import * as _ from 'lodash';
 import { Errors } from '../typescript-rest';

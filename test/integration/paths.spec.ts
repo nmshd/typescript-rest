@@ -1,5 +1,4 @@
-import * as express from 'express';
-import * as request from 'request';
+import express from 'express';
 import {
     Abstract,
     Context,
@@ -11,6 +10,7 @@ import {
     Server,
     ServiceContext
 } from '../../src/typescript-rest';
+import request from './axios-request';
 
 @Path('/pathtest')
 export class PathTestService {
