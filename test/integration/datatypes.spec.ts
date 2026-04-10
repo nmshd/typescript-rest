@@ -104,7 +104,6 @@ export class TestParamsService {
     @GET
     @Path('myheader')
     public testMyHeader(): string {
-        // eslint-disable-next-line @typescript-eslint/restrict-plus-operands, @typescript-eslint/no-base-to-string
         return 'header: ' + this.myHeader;
     }
 

@@ -1,4 +1,3 @@
-/* eslint-disable prefer-spread */
 'use strict';
 
 import * as bodyParser from 'body-parser';
