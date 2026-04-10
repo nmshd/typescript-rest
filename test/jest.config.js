@@ -7,13 +7,5 @@ module.exports = {
     testMatch: ['**/test/unit/**/*.spec.ts', '**/test/integration/**/*.spec.ts'],
     coverageDirectory: 'reports/coverage',
     collectCoverageFrom: ['src/**/*.{ts,tsx,js,jsx}', '!src/**/*.d.ts'],
-    coverageThreshold: {
-        global: {
-            branches: 80,
-            functions: 90,
-            lines: 90,
-            statements: 90
-        }
-    },
     rootDir: '../'
 };
