@@ -1,10 +1,9 @@
 'use strict';
 
 import { Container } from '@nmshd/typescript-ioc';
-import * as express from 'express';
+import express from 'express';
 import * as fs from 'fs';
 import * as _ from 'lodash';
-import * as request from 'request';
 import {
     BodyOptions,
     BodyType,
@@ -28,6 +27,7 @@ import {
     Server,
     ServiceContext
 } from '../../src/typescript-rest';
+import request from './axios-request';
 
 export class Person {
     public id: number;
@@ -104,7 +104,6 @@ export class TestParamsService {
     @GET
     @Path('myheader')
     public testMyHeader(): string {
-        // eslint-disable-next-line @typescript-eslint/restrict-plus-operands, @typescript-eslint/no-base-to-string
         return 'header: ' + this.myHeader;
     }
 
@@ -136,6 +135,17 @@ export class TestParamsService {
                 response.send(false);
             }
         }
+    }
+
+    @GET
+    @Path('query-param-array-string')
+    public testQueryParamArrayString(@QueryParam('param') param: Array<string>): string {
+        return JSON.stringify(param);
+    }
+    @GET
+    @Path('query-param-array-number')
+    public testQueryParamArrayNumber(@QueryParam('param') param: Array<number>): string {
+        return JSON.stringify(param);
     }
 
     @GET

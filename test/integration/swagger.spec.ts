@@ -1,9 +1,9 @@
-import * as express from 'express';
+import express from 'express';
 import { readFileSync } from 'fs';
 import * as _ from 'lodash';
-import * as request from 'request';
 import * as YAML from 'yaml';
 import { Server } from '../../src/typescript-rest';
+import request from './axios-request';
 
 let server: any;
 let swaggerFile: any;

@@ -1,12 +1,11 @@
-/* eslint-disable prefer-spread */
 'use strict';
 
 import * as bodyParser from 'body-parser';
-import * as cookieParser from 'cookie-parser';
-import * as debug from 'debug';
+import cookieParser from 'cookie-parser';
+import debug from 'debug';
 import * as express from 'express';
 import * as _ from 'lodash';
-import * as multer from 'multer';
+import multer from 'multer';
 import { routeRequiresAuthorization } from '../middlewares/routeRequiresAuthorization';
 import * as Errors from './model/errors';
 import { ServiceClass, ServiceMethod } from './model/metadata';
@@ -163,31 +162,33 @@ export class ServerContainer {
             this.resolveProperties(serviceClass, serviceMethod);
         }
 
-        let args: Array<any> = [serviceMethod.resolvedPath];
-        args = args.concat(this.buildSecurityMiddlewares(serviceClass, serviceMethod));
-        args = args.concat(this.buildParserMiddlewares(serviceClass, serviceMethod));
-        args.push(this.buildServiceMiddleware(serviceMethod, serviceClass));
+        const args: [string, ...Array<express.RequestHandler>] = [
+            serviceMethod.resolvedPath,
+            ...this.buildSecurityMiddlewares(serviceClass, serviceMethod),
+            ...this.buildParserMiddlewares(serviceClass, serviceMethod),
+            this.buildServiceMiddleware(serviceMethod, serviceClass)
+        ];
         switch (serviceMethod.httpMethod) {
             case HttpMethod.GET:
-                this.router.get.apply(this.router, args);
+                this.router.get(...args);
                 break;
             case HttpMethod.POST:
-                this.router.post.apply(this.router, args);
+                this.router.post(...args);
                 break;
             case HttpMethod.PUT:
-                this.router.put.apply(this.router, args);
+                this.router.put(...args);
                 break;
             case HttpMethod.DELETE:
-                this.router.delete.apply(this.router, args);
+                this.router.delete(...args);
                 break;
             case HttpMethod.HEAD:
-                this.router.head.apply(this.router, args);
+                this.router.head(...args);
                 break;
             case HttpMethod.OPTIONS:
-                this.router.options.apply(this.router, args);
+                this.router.options(...args);
                 break;
             case HttpMethod.PATCH:
-                this.router.patch.apply(this.router, args);
+                this.router.patch(...args);
                 break;
 
             default:
@@ -477,15 +478,17 @@ export class ServerContainer {
     }
 
     private buildCookieParserMiddleware() {
-        const args = [];
+        const options = this.cookiesDecoder ? { decode: this.cookiesDecoder } : undefined;
+        this.debugger.build('Creating cookie parser with options %j.', [this.cookiesSecret, options]);
+        if (this.cookiesSecret && options) {
+            return cookieParser(this.cookiesSecret, options);
+        }
         if (this.cookiesSecret) {
-            args.push(this.cookiesSecret);
+            return cookieParser(this.cookiesSecret);
         }
-        if (this.cookiesDecoder) {
-            args.push({ decode: this.cookiesDecoder });
+        if (options) {
+            return cookieParser(undefined, options);
         }
-        this.debugger.build('Creating cookie parser with options %j.', args);
-        const middleware = cookieParser.apply(this, args);
-        return middleware;
+        return cookieParser();
     }
 }

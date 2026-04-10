@@ -1,4 +1,4 @@
-import * as debug from 'debug';
+import debug from 'debug';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { Server } from './server';
@@ -20,7 +20,6 @@ export class ServerConfig {
                 }
             }
         } catch (e) {
-            // eslint-disable-next-line no-console
             console.error(e);
         }
     }

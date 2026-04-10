@@ -1,6 +1,6 @@
-import * as express from 'express';
-import * as request from 'request';
+import express from 'express';
 import { Path, POST, PostProcessor, Server } from '../../src/typescript-rest';
+import request from './axios-request';
 
 @Path('postprocessor')
 @PostProcessor(postprocessor1)

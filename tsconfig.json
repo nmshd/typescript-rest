@@ -15,7 +15,9 @@
     "outDir": "dist",
     "sourceMap": true,
     "strictNullChecks": false,
-    "target": "es2021"
+    "target": "es2021",
+    "esModuleInterop": true,
+    "rootDir": "src"
   },
   "include": ["src/**/*.ts"]
 }

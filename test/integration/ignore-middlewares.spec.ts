@@ -1,7 +1,6 @@
-import * as express from 'express';
-import * as _ from 'lodash';
-import * as request from 'request';
+import express from 'express';
 import { GET, IgnoreNextMiddlewares, Path, Server } from '../../src/typescript-rest';
+import request from './axios-request';
 
 @Path('/ignoreEndpoint')
 export class EndpointTestService {

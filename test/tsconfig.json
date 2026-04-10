@@ -14,7 +14,10 @@
     "noUnusedLocals": true,
     "sourceMap": true,
     "strictNullChecks": false,
-    "target": "es2021"
+    "target": "es2021",
+    "types": ["jest"],
+    "noEmit": true,
+    "esModuleInterop": true
   },
   "include": ["**/*.ts"]
 }

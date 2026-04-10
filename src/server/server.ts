@@ -1,6 +1,6 @@
 'use strict';
 
-import * as debug from 'debug';
+import debug from 'debug';
 import * as express from 'express';
 import * as fs from 'fs-extra';
 import * as _ from 'lodash';
@@ -61,8 +61,9 @@ export class Server {
             } catch (e) {
                 serverDebugger('Error loading services for pattern: %j. Error: %o', patterns, e);
                 serverDebugger('ImportedTypes: %o', importedTypes);
+                const message = e instanceof Error ? e.message : String(e);
                 throw new TypeError(
-                    `Error loading services for pattern: ${JSON.stringify(patterns)}. Error: ${e.message}`
+                    `Error loading services for pattern: ${JSON.stringify(patterns)}. Error: ${message}`
                 );
             }
         }

@@ -1,6 +1,6 @@
-import * as express from 'express';
-import * as request from 'request';
+import express from 'express';
 import { Errors, GET, Path, Server } from '../../src/typescript-rest';
+import request from './axios-request';
 
 @Path('errors')
 export class ErrorService {

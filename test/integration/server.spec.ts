@@ -1,5 +1,4 @@
-import * as express from 'express';
-import * as request from 'request';
+import express from 'express';
 import {
     Accept,
     AcceptLanguage,
@@ -12,6 +11,7 @@ import {
     Return,
     Server
 } from '../../src/typescript-rest';
+import request from './axios-request';
 
 export class Person {
     public id: number;

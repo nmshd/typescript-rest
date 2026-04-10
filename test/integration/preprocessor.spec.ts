@@ -1,12 +1,12 @@
-import * as express from 'express';
-import * as request from 'request';
+import express from 'express';
 import { ContextRequest, Errors, Path, POST, PreProcessor, Server } from '../../src/typescript-rest';
+import request from './axios-request';
 
 @Path('preprocessor')
 @PreProcessor(preprocessor1)
 export class PreprocessedService {
     @ContextRequest
-    public request: PreprocessedRequest;
+    public request: express.Request;
 
     @Path('test')
     @POST
@@ -29,18 +29,18 @@ export class PreprocessedService {
     }
 }
 
-function preprocessor1(req: PreprocessedRequest) {
+function preprocessor1(req: express.Request) {
     if (!req.body.valid) {
         throw new Errors.BadRequestError();
     }
     req.preprocessor1 = true;
 }
 
-function preprocessor2(req: PreprocessedRequest) {
+function preprocessor2(req: express.Request) {
     req.preprocessor2 = true;
 }
 
-async function asyncPreprocessor1(req: PreprocessedRequest) {
+async function asyncPreprocessor1(req: express.Request) {
     if (!req.body.asyncValid) {
         throw new Errors.BadRequestError();
     }
@@ -49,16 +49,20 @@ async function asyncPreprocessor1(req: PreprocessedRequest) {
     return Promise.resolve();
 }
 
-async function asyncPreprocessor2(req: PreprocessedRequest) {
+async function asyncPreprocessor2(req: express.Request) {
     req.asyncPreproocessor2 = true;
     return Promise.resolve();
 }
 
-interface PreprocessedRequest extends express.Request {
-    preprocessor1: boolean;
-    preprocessor2: boolean;
-    asyncPreproocessor1: boolean;
-    asyncPreproocessor2: boolean;
+declare global {
+    namespace Express {
+        interface Request {
+            preprocessor1?: boolean;
+            preprocessor2?: boolean;
+            asyncPreproocessor1?: boolean;
+            asyncPreproocessor2?: boolean;
+        }
+    }
 }
 
 describe('Preprocessor Tests', () => {

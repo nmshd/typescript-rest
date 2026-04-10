@@ -1,9 +1,9 @@
 import { Container, Inject, OnlyInstantiableByContainer } from '@nmshd/typescript-ioc';
-import * as debug from 'debug';
-import * as express from 'express';
+import debug from 'debug';
+import express from 'express';
 import * as _ from 'lodash';
-import * as request from 'request';
 import { DefaultServiceFactory, GET, Path, Server } from '../../src/typescript-rest';
+import request from './axios-request';
 
 const serverDebugger = debug('typescript-rest-ioc');
 
