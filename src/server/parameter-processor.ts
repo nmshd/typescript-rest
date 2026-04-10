@@ -86,10 +86,6 @@ export class ParameterProcessor {
     }
 
     private convertType(paramValue: string | boolean | string[], paramType: Function): any {
-        // Express typings may expose route/query values as arrays; use first value for scalar params.
-        if (Array.isArray(paramValue)) {
-            paramValue = paramValue[0];
-        }
         const serializedType = paramType['name'];
         this.debugger.runtime('Processing parameter. received type: %s, received value:', serializedType, paramValue);
         switch (serializedType) {
@@ -98,6 +94,9 @@ export class ParameterProcessor {
             case 'Boolean':
                 if (paramValue === undefined) return paramValue;
                 if (typeof paramValue === 'boolean') return paramValue;
+                if (Array.isArray(paramValue)) {
+                    throw new Errors.BadRequestError('Multiple values not allowed for boolean parameters');
+                }
 
                 return paramValue.toLowerCase() === 'true';
             default:

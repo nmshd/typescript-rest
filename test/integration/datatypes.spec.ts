@@ -139,6 +139,17 @@ export class TestParamsService {
     }
 
     @GET
+    @Path('query-param-array-string')
+    public testQueryParamArrayString(@QueryParam('param') param: Array<string>): string {
+        return JSON.stringify(param);
+    }
+    @GET
+    @Path('query-param-array-number')
+    public testQueryParamArrayNumber(@QueryParam('param') param: Array<number>): string {
+        return JSON.stringify(param);
+    }
+
+    @GET
     @Path('default-query')
     public testDefaultQuery(
         @QueryParam('limit') limit: number = 20,
